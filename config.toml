@@ -1,0 +1,70 @@
+baseurl = "/"
+languageCode = "en-us"
+theme = "hello-friend-ng"
+title = "Peyton Walters"
+
+[permalinks]
+  posts = "/posts/:year/:month/:title/"
+
+[blackfriday]
+  # need to disable fractions to protect ip prefix notation (192.168.2.4/30)
+  fractions = false
+
+[params]
+  dateform        = "Jan 2, 2006"
+  dateformShort   = "Jan 2"
+  dateformNum     = "2006-01-02"
+  dateformNumTime = "2006-01-02 15:04 -0700"
+
+  fractions = false
+
+  # Metadata mostly used in document's head
+  description = "Homepage and blog by Peyton Walters"
+  keywords = "homepage, blog, networking, linux, programming"
+  images = [""]
+
+  # Directory name of your blog content (default is `content/posts`)
+  contentTypeName = "posts"
+  # Default theme "light" or "dark"
+  defaultTheme = "light"
+
+
+  [[params.social]]
+    name = "email"
+    url = "mailto:pwpon500@gmail.com"
+
+  [[params.social]]
+    name = "github"
+    url = "https://github.com/Pwpon500"
+
+  [[params.social]]
+    name = "linkedin"
+    url = "https://www.linkedin.com/in/peyton-walters-a26559158/"
+
+[languages]
+  [languages.en]
+    title = "Peyton Walters"
+    subtitle = ""
+    keywords = ""
+    copyright = ""
+    readOtherPosts = "Read other posts"
+
+    [languages.en.params.logo]
+      logoText = "/home/peyton/ $"
+      logoHomeLink = "/"
+    # or
+    #
+    # path = "/img/your-example-logo.svg"
+    # alt = "Your example logo alt text"
+
+	# You can create a language based menu
+    [languages.en.menu]
+      [[languages.en.menu.main]]
+        identifier = "about"
+        name = "About"
+        url = "/about"
+      [[languages.en.menu.main]]
+        identifier = "blog"
+        name = "Blog"
+        url = "/posts"
+

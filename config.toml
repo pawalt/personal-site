@@ -1,7 +1,11 @@
-baseurl = "/"
+baseurl = "https://pwpon500.github.io/"
 languageCode = "en-us"
 theme = "hello-friend-ng"
 title = "Peyton Walters"
+
+enableRobotsTXT = true
+
+PygmentsCodeFences = true
 
 [permalinks]
   posts = "/posts/:year/:month/:title/"
@@ -45,9 +49,8 @@ title = "Peyton Walters"
   [languages.en]
     title = "Peyton Walters"
     subtitle = ""
-    keywords = ""
-    copyright = ""
-    readOtherPosts = "Read other posts"
+    keywords = "im peyton"
+    copyright = "Peyton Walters"
 
     [languages.en.params.logo]
       logoText = "/home/peyton/ $"
@@ -57,14 +60,13 @@ title = "Peyton Walters"
     # path = "/img/your-example-logo.svg"
     # alt = "Your example logo alt text"
 
-	# You can create a language based menu
-    [languages.en.menu]
-      [[languages.en.menu.main]]
-        identifier = "about"
-        name = "About"
-        url = "/about"
-      [[languages.en.menu.main]]
-        identifier = "blog"
-        name = "Blog"
-        url = "/posts"
+[menu]
+  [[menu.main]]
+    identifier = "about"
+    name = "About"
+    url = "/about"
+  [[menu.main]]
+    identifier = "blog"
+    name = "Blog"
+    url = "/posts"
 

@@ -11,7 +11,7 @@ tags = [
 ]
 +++
 
-While working on my load balancer, [Caplance](https://github.com/pwpon500/Caplance), I ran into a very strange error when trying to establish a connection between a client and a backend. Before I go to deep, though, let me give a quick intro into TCP connection establishment works.
+While working on my load balancer, [Caplance](https://github.com/pwpon500/Caplance), I ran into a very strange error when trying to establish a connection between a client and a backend. Before I go to deep, though, let me give a quick intro into how TCP connection establishment works.
 
 ### Types of message
 

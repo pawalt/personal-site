@@ -75,7 +75,9 @@ If you're interested in this stuff, I invite you to sit for a minute and think a
 
 ### The bug revealed
 
-Remember when I said that Caplance isn't binding to a specific port? That turns out to be the key to the puzzle here. Let's think about the connection establishment journey:
+Remember when I said that Caplance isn't binding to a specific port? That turns out to be the key to the puzzle here. **Since Caplance listens for all TCP connections instead of a single port, it never sends a "bind" request to the OS. This means that the OS will still respond to all incoming TCP connections with a RESET.**
+
+To clarify, let's think about the connection establishment journey:
 
 1. SYN leaves the client
 1. SYN hits the load balancer

@@ -13,7 +13,7 @@ tags = [
 
 While working on my load balancer, [Caplance](https://github.com/pwpon500/Caplance), I ran into a very strange error when trying to establish a connection between a client and a backend. Before I go to deep, though, let me give a quick intro into how TCP connection establishment works.
 
-### Types of message
+### Types of Message
 
 When establishing a TCP connection, there are 4 possible packet types you could see:
 
@@ -24,7 +24,7 @@ When establishing a TCP connection, there are 4 possible packet types you could 
 
 In a successful connection, the order will be SYN, SYN-ACK, ACK. In an unsuccessful connection, the order will be SYN, RESET.
 
-### Operating systems and TCP
+### Operating Systems and TCP
 
 When a program wants to use TCP, it asks the OS to "bind" to a TCP port. Then, when packets come into that TCP port, the OS hands off the packets to the program. The program can then reply to those packets however it wants (accepting or rejecting the incoming connections).
 
@@ -73,7 +73,7 @@ At this point, I'm baffled. Let's recap what's going on here. The server is seei
 
 If you're interested in this stuff, I invite you to sit for a minute and think about why this might be happening. This is one of the more interesting bugs I've run into in a while. The presence of a SYN-ACK and RESET concurrently really interested me.
 
-### The bug revealed
+### The Bug Revealed
 
 Remember when I said that Caplance isn't binding to a specific port? That turns out to be the key to the puzzle here. **Since Caplance listens for all TCP connections instead of a single port, it never sends a "bind" request to the OS. This means that the OS will still respond to all incoming TCP connections with a RESET.**
 
@@ -133,7 +133,7 @@ for !stopped {
 
 Don't worry if you don't understand the Go specifics of this code. The important thing is that we're creating a NFQUEUE receiver called `b.nfq`. Then, we create a channel called `packetChan` off of which we can consume whatever packets come in to queue 0.
 
-### Running it
+### Running It
 
 Let's make sure this works! If it does, we should see whatever we type into h3 popping up in the TCP server on h2.
 

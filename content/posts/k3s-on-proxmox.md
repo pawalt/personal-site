@@ -98,7 +98,7 @@ $ terraform plan
 $ terraform apply
 ```
 
-These commands will have a lot of input, but I don't want to paste it all here. It should be clear if things have worked.
+These commands will have a lot of output, but I don't want to paste it all here. It should be clear if things have worked.
 
 Wait a few minutes for the VMs to finish doing their cloud-init inital configuration, and continue to the next step.
 
@@ -165,7 +165,9 @@ Commercial support is available at
 </html>
 ```
 
-Woohoo! Looks to me like this thing's working. Now if you don't want it anymore, you can do a simple `terraform destroy` in the `proxmox-tf` directory, and you're back to where you started.
+Woohoo! Looks to me like this thing's working. If you want to get out the kubeconfig to run `kubectl` from your local machine, it's in `/etc/rancher/k3s/k3s.yaml`.
+
+Now if you don't want it anymore, you can do a simple `terraform destroy` in the `proxmox-tf` directory, and you're back to where you started.
 
 ## Conclusion
 

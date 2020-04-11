@@ -19,6 +19,8 @@ PygmentsCodeFences = true
   dateformShort   = "Jan 2"
   dateformNum     = "2006-01-02"
   dateformNumTime = "2006-01-02 15:04 -0700"
+  
+  avatar = "/img/avatar.jpg"
 
   fractions = false
 
@@ -40,6 +42,10 @@ PygmentsCodeFences = true
   [[params.social]]
     name = "github"
     url = "https://github.com/pawalt"
+
+  [[params.social]]
+    name = "twitter"
+    url = "https://twitter.com/peywalt"
 
   [[params.social]]
     name = "linkedin"

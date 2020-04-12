@@ -31,7 +31,11 @@ function startKudos() {
 
   const initResp = kudosCheck(uuid, postName);
 
-  text.text(initResp.numClicked + " kudos")
+  // if check fails this will be undefined
+  if (!initResp.numClicked) {
+    initResp.numClicked = 0;
+  }
+  text.text(initResp.numClicked + " kudos");
 
   if (!initResp.userClicked) {
     circle.mouseenter(e => {

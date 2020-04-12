@@ -8,3 +8,6 @@
 
 [context.deploy-preview.environment]
   HUGO_VERSION = "0.59.1"
+
+[dev]
+  command = "hugo server --baseUrl='http://localhost:8888' --appendPort=false"

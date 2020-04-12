@@ -1,6 +1,6 @@
 [build]
   publish = "public"
-  command = "hugo --gc --minify"
+  command = "cd functions && npm install && cd .. && hugo --gc --minify"
   functions = "functions/"
 
 [context.production.environment]

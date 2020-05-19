@@ -4,10 +4,10 @@
   functions = "functions/"
 
 [context.production.environment]
-  HUGO_VERSION = "0.59.1"
+  HUGO_VERSION = "v0.70.0"
 
 [context.deploy-preview.environment]
-  HUGO_VERSION = "0.59.1"
+  HUGO_VERSION = "v0.70.0"
 
 [dev]
-  command = "hugo server --baseUrl='http://localhost:8888' --appendPort=false"
+  command = "hugo server --baseUrl=http://localhost:8888/ --appendPort=false"

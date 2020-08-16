@@ -2,14 +2,12 @@
 title = "Building Icarus"
 description = "Bye Dokku"
 date = "2020-05-27"
-categories = [ "networking", "programming", "post" ]
+categories = [ "infrastructure", "programming", "post" ]
 tags = [
-  "go",
-  "golang",
-  "load balancing",
-  "networking",
-  "linux",
-  "caplance"
+  "kubernetes",
+  "helm",
+  "pennlabs",
+  "platform",
 ]
 +++
 

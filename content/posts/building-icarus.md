@@ -44,7 +44,7 @@ There are quite a few tools that fit together to make this system work (Hashicor
 
 Kubernetes configs are hard and complicated. Kubernetes aims to be able to support any containerized application architecture possible, so it exposes every knob you could possibly want to turn. In simple setups, as you can see below, this leads to nothing other than repetition and confusion:
 
-```yaml
+{{< code yaml >}}
 ---
 # Source: icarus/templates/services.yaml
 apiVersion: v1
@@ -63,10 +63,67 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-......
-See the whole story below:
-https://gist.github.com/pawalt/98705a160818d67f2ad5aabcd4386fb3
-```
+  name: "testsite-serve"
+  namespace: default
+  labels:
+    name: "testsite-serve"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: "testsite-serve"
+  template:
+    metadata:
+      labels:
+        name: "testsite-serve"
+    spec:
+      containers:
+        - name: "worker"
+          image: "pennlabs/website:latest"
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 80
+          envFrom:
+            - secretRef:
+                name: test-secret
+---
+# Source: icarus/templates/ingresses.yaml
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: testsite-serve
+  namespace: default
+spec:
+  rules:
+    - host: "pennlabs.org"
+      http:
+        paths:
+          - path: "/"
+            backend:
+              serviceName: testsite-serve
+              servicePort: 80
+  tls:
+    - hosts:
+        - "pennlabs.org"
+      secretName: pennlabs-org-tls
+---
+# Source: icarus/templates/certificates.yaml
+apiVersion: cert-manager.io/v1alpha2
+kind: Certificate
+metadata:
+  name: pennlabs-org
+  annotations:
+    "helm.sh/resource-policy": keep
+spec:
+  secretName: pennlabs-org-tls
+  dnsNames:
+  - "pennlabs.org"
+  - "*.pennlabs.org"
+  issuerRef:
+    name: wildcard-letsencrypt-prod
+    kind: ClusterIssuer
+    group: cert-manager.io
+{{< /code >}}
 
 As mentioned earlier, in our applications we can make the following assumptions to make our lives easier:
 
@@ -87,7 +144,6 @@ applications:
       hosts:
         - host: pennlabs.org
           paths: ['/']
-
 ```
 
 Let's dive into how this is possible.

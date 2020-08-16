@@ -5,7 +5,7 @@ title = "Peyton Walters"
 
 enableRobotsTXT = true
 
-PygmentsCodeFences = true
+pygmentsCodefences = true
 
 [permalinks]
   posts = "/posts/:year/:month/:title/"

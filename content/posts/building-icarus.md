@@ -1,5 +1,5 @@
 +++
-title = "Building Icarus"
+title = "Icarus: Taming the Kubernetes Beast"
 description = "Bye Dokku"
 date = "2020-05-27"
 categories = [ "infrastructure", "programming", "post" ]

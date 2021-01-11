@@ -8,14 +8,21 @@
                 <polyline points="12 6 12 12 16 14"></polyline>
             </svg>{{ .Params.total_time }} minutes total | {{ .Params.active_time }} minutes active
         </p>
+
     </div>
 
     <article>
-        <h1 class="post-title"><a href="{{ .Permalink }}">{{ .Title | markdownify }}</a></h1>
-
         {{ with .Params.Cover }}
-        <img src="/img/{{ . }}" class="post-cover" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.1/css/lightbox.min.css" />
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.1/js/lightbox.min.js"></script>
+
+        <a href="/img/{{ . }}"  data-lightbox="x">
+            <img src="/img/{{ . }}" class="post-cover" style="height: 400px; object-fit: cover;" />
+        </a>
         {{ end }}
+
+        <h1 class="post-title"><a href="{{ .Permalink }}">{{ .Title | markdownify }}</a></h1>
 
         <div class="post-content">
             {{ .Content }}

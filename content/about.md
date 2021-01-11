@@ -3,7 +3,7 @@ title = "About"
 description = "A little bit about me"
 +++
 
-Hey everyone! I'm Peyton Walters and I'm a student at the University of Pennsylvania studying [Networked and Social Systems Engineering](https://www.nets.upenn.edu/) and a software engineering contractor for [Bloomberg](https://www.bloomberg.com/company/).
+Hey folks; I'm Peyton Walters and I'm a student at the University of Pennsylvania studying Computer Science and an instructor for [CIS 188](https://cis188.org/).
 
 I'm particularly interested in distributed systems (particularly Kubernetes), IP networking, and Unix-based operating systems, but there are far more things than that which pique my interest. Some of my past and current work includes:
 

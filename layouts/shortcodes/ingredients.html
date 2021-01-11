@@ -1,0 +1,24 @@
+
+<style>
+.ingredient-section {
+  border: 0.5ch solid;
+  border-radius: 1ch;
+  float: left;
+  padding-left: 1ch;
+  padding-right: 1ch;
+  margin: 1em;
+}
+.ingredient-group-name {
+  margin-top: 0.25em;
+  margin-bottom: 0.25em;
+}
+ul {
+  margin-top: 0em;
+}
+</style>
+
+<div class="ingredient-section">
+<h3 class="ingredient-group-name">{{ .Get 0 }}</h3>
+
+{{ (trim .Inner "\n\r") | markdownify }}
+</div>

@@ -14,6 +14,12 @@ pygmentsCodefences = true
   # need to disable fractions to protect ip prefix notation (192.168.2.4/30)
   fractions = false
 
+[taxonomies]
+  category = "categories"
+  ingredient = "ingredients"
+  group = "groups"
+  tag = "tags"
+
 [params]
   dateform        = "Jan 2, 2006"
   dateformShort   = "Jan 2"
@@ -37,7 +43,7 @@ pygmentsCodefences = true
 
   [[params.social]]
     name = "email"
-    url = "mailto:pwpon500@gmail.com"
+    url = "mailto:pawalt@hey.com"
 
   [[params.social]]
     name = "github"
@@ -75,4 +81,7 @@ pygmentsCodefences = true
     identifier = "blog"
     name = "Blog"
     url = "/posts"
-
+  [[menu.main]]
+    identifier = "recipes"
+    name = "Food"
+    url = "/recipes"

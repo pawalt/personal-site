@@ -7,6 +7,9 @@ enableRobotsTXT = true
 
 pygmentsCodefences = true
 
+[markup.goldmark.renderer]
+  unsafe= true
+
 [permalinks]
   posts = "/posts/:year/:month/:title/"
 

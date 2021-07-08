@@ -78,7 +78,7 @@ The key idea of these thighs is that we want to end up with bulk pre-cooked chic
 
 Once your thighs are seared, they should look something like this (peep the marinade in the back):
 
-![Thighs seared](/img/recipes/chicken-thighs/seared.jpg)
+{{< figure src="/img/recipes/chicken-thighs/seared.jpg" caption="Seared chicken thighs" >}}
 
 #### Veggie interlude
 
@@ -96,7 +96,7 @@ Now that we've got thighs and marinade, add both to the instant pot and cook on 
 
 I'll typically put a thigh on rice, spoon some of the marinade from the pot over top and garnish with green onions. Here's what it looks like! These are actually breasts, but the thighs will look similar.
 
-![thighs by themselves](/img/recipes/chicken-thighs/breasts.jpeg)
+{{< figure src="/img/recipes/chicken-thighs/breasts.jpeg" caption="Breasts with sauce over rice garnished with green onions" >}}
 
 If you cooked up vegetables earlier, this is a great time to reuse them. Add those veggies on top of the chicken + rice for a full meal.
 

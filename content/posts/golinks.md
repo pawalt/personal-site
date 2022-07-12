@@ -1,6 +1,6 @@
 +++
 title = "Golinks at home"
-description = "change this later"
+description = "I got thoroughly nerdsniped by this"
 date = "2022-07-12"
 categories = [ "networking", "programming", "post" ]
 tags = [

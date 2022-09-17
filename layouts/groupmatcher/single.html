@@ -18,17 +18,10 @@ function organize() {
     const weeks = [];
     const pairings = new Object();
 
-    console.log(kids);
-    console.log(pairings);
-
     // prepopulate pairings with reflexive
     for (const kid in kids) {
-        console.log(kid)
         pairings[kid] = [kid];
-        console.log(JSON.stringify(pairings))
     }
-
-    console.log(JSON.stringify(pairings))
 
     for (let i = 0; i < kids.length - 1; i++) {
         const week = [];
@@ -37,12 +30,8 @@ function organize() {
             if (visited.includes(kid)) {
                 continue
             }
-            console.log(kid)
             for (const toVisit in kids) {
-                console.log(kid)
-                console.log(toVisit)
                 if (!pairings[kid].includes(toVisit) && !visited.includes(toVisit)) {
-                    console.log("in")
                     week.push([kid, toVisit])
                     pairings[kid].push(toVisit)
                     pairings[toVisit].push(kid)
@@ -50,17 +39,12 @@ function organize() {
                     visited.push(toVisit)
                     visited.push(kid)
 
-                    console.log("---");
                     break
                 }
-                console.log("---");
             }
         }
-        console.log(week)
         weeks.push(week)
     }
-
-    console.log(weeks)
 
     output = ""
     for (const weekInd in weeks) {
@@ -68,7 +52,7 @@ function organize() {
         const week = weeks[weekInd];
         for (const singlePairingInd in week) {
             const singlePairing = week[singlePairingInd];
-            console.log(singlePairing)
+
             const firstKid = kids[singlePairing[0]];
             const secondKid = kids[singlePairing[1]];
 

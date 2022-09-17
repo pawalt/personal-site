@@ -1,0 +1,99 @@
+{{ define "main" }}
+<style>
+textarea {
+    width: 25vw;
+    height: 50vh;
+}
+</style>
+
+<script>
+function organize() {
+    const kids = document.getElementById("input").value.trim().split("\n");
+
+    if (kids.length % 2 == 1) {
+        alert("you can't evenly pair up an odd number of kids bud")
+        return
+    }
+
+    const weeks = [];
+    const pairings = new Object();
+
+    console.log(kids);
+    console.log(pairings);
+
+    // prepopulate pairings with reflexive
+    for (const kid in kids) {
+        console.log(kid)
+        pairings[kid] = [kid];
+        console.log(JSON.stringify(pairings))
+    }
+
+    console.log(JSON.stringify(pairings))
+
+    for (let i = 0; i < kids.length - 1; i++) {
+        const week = [];
+        const visited = [];
+        for (const kid in kids) {
+            if (visited.includes(kid)) {
+                continue
+            }
+            console.log(kid)
+            for (const toVisit in kids) {
+                console.log(kid)
+                console.log(toVisit)
+                if (!pairings[kid].includes(toVisit) && !visited.includes(toVisit)) {
+                    console.log("in")
+                    week.push([kid, toVisit])
+                    pairings[kid].push(toVisit)
+                    pairings[toVisit].push(kid)
+
+                    visited.push(toVisit)
+                    visited.push(kid)
+
+                    console.log("---");
+                    break
+                }
+                console.log("---");
+            }
+        }
+        console.log(week)
+        weeks.push(week)
+    }
+
+    console.log(weeks)
+
+    output = ""
+    for (const weekInd in weeks) {
+        output += `WEEK ${weekInd}\n`;
+        const week = weeks[weekInd];
+        for (const singlePairingInd in week) {
+            const singlePairing = week[singlePairingInd];
+            console.log(singlePairing)
+            const firstKid = kids[singlePairing[0]];
+            const secondKid = kids[singlePairing[1]];
+
+            output += `${firstKid}, ${secondKid}\n`
+        }
+        output += "\n\n"
+    }
+
+    document.getElementById("output").value = output;
+}
+</script>
+
+<main aria-role="main">
+    <h3>enter kids newline-separated</h3>
+    <div>
+        <textarea id="input">
+davis
+peyton
+goeller
+madison
+        </textarea>
+        <textarea id="output"></textarea>
+        <br>
+        <button onclick="organize()">Make pairings</button>
+    </div>
+</main>
+
+{{ end }}

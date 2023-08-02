@@ -22,7 +22,8 @@
             <textarea id="prompt" type="text" value="" cols="80" rows="1" placeholder="One day"></textarea>
         </div>
         <select id="model">
-            <option value="next_model">next_model</option>
+            <option value="tinyong">tinyong</option>
+            <option value="yong15M">yong15M</option>
         </select>
 
         <label>temperature</label><input id="temperature" type="number" value="0.7">
@@ -460,11 +461,7 @@
     }
 
     async function init() {
-        // await load_model('testmodel.bin');
-        // await load_model('chatmodel.bin');
-        // await load_model('testmodel.bin');
-        // await load_model('stories15m.bin');
-        await load_model('next_model.bin');
+        await load_model('yong15M.bin');
         await load_vocab('tokenizer.bin');
 
         generate();

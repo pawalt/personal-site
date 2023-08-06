@@ -1,4 +1,6 @@
 +++
+title = "Recipes"
+description = "all my recipes"
 +++
 
 # Recipes

@@ -1,6 +1,6 @@
 +++
-title = "Country Fair Lemonade"
-description = "Refreshing and sweet lemonade just like mom made it"
+title = "The Good Lemonade"
+description = "Refreshing and sweet lemonade like they served at the country fair"
 date = "2023-08-06"
 total_time = "1440"
 active_time = "20"

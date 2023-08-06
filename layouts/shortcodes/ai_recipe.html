@@ -1,0 +1,27 @@
+<!-- This shortcode takes a recipe JSON file and turns it into a pretty hugo recipe. -->
+
+<blockquote>
+<p>This recipe was transcribed from my voice and formatted using LLMs. There may be weirdness in formatting or missing instructions.</p>
+</blockquote>
+
+{{ with .Get "url" }}
+    {{ $url := . }}
+    {{ $data := getJSON $url }}
+
+    <p>{{ $data.description }}</p>
+
+    <h3>Ingredients</h3>
+    <ul>
+        {{ range $data.ingredients }}
+            {{ $ingredient := . }}
+            <li>{{ $ingredient.quantity }} {{ $ingredient.unit }} {{ $ingredient.name }}</li>
+        {{ end }}
+    </ul>
+
+    <h3>Steps</h3>
+    <ol>
+        {{ range $data.steps }}
+            <li>{{ . }}</li>
+        {{ end }}
+    </ol>
+{{ end }}

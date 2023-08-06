@@ -1,0 +1,31 @@
+{
+  "description": "Refreshing and sweet lemonade just like mom made it",
+  "steps": [
+    "Peel 6 lemons and combine the peels with 1 cup of sugar in a bowl. Stir and let it infuse overnight.",
+    "Bring 5 cups of water to a gentle boil and pour it into the bowl with the lemon peels and sugar. Stir until the sugar dissolves.",
+    "Strain out the lemon peels from the mixture.",
+    "Squeeze the juice from all 6 lemons into the sweetened lemon water.",
+    "Chill the lemonade in the refrigerator for a few hours.",
+    "Serve the lemonade over ice and enjoy the refreshing taste of the ultimate country fair lemonade."
+  ],
+  "recipe_title": "Country Fair Lemonade",
+  "ingredients": [
+    {
+      "name": "lemons",
+      "unit": "",
+      "quantity": "6"
+    },
+    {
+      "name": "sugar",
+      "unit": "cup",
+      "quantity": "1"
+    },
+    {
+      "name": "water",
+      "unit": "cups",
+      "quantity": "5"
+    }
+  ],
+  "total_time": 1440,
+  "active_time": 20
+}

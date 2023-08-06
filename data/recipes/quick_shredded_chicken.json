@@ -1,0 +1,30 @@
+{
+  "description": "Quick shredded chicken recipe using Instant Pot.",
+  "steps": [
+    "Put six boneless, skinless chicken thighs in the Instant Pot with chicken bouillon and flavorings.",
+    "Cook on high pressure for eight minutes.",
+    "Remove the chicken and shred it.",
+    "Sear the shredded chicken in a pan for some color.",
+    "Serve on your choice of dish."
+  ],
+  "recipe_title": "Quick Shredded Chicken",
+  "ingredients": [
+    {
+      "name": "boneless, skinless chicken thighs",
+      "unit": "pieces",
+      "quantity": "6"
+    },
+    {
+      "name": "chicken bouillon",
+      "unit": "cubes",
+      "quantity": "1"
+    },
+    {
+      "name": "flavorings",
+      "unit": "to taste",
+      "quantity": "as desired"
+    }
+  ],
+  "total_time": 8,
+  "active_time": 8
+}

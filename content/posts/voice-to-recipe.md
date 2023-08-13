@@ -11,7 +11,7 @@ tags = [
 ]
 +++
 
-I've had a lot of fun playing with LLMs recently. I think they get a lot of coverage in applications where they play the role of an assistant, but I've had pretty mixed results building these kinds of tools. In particular, I've had trouble getting the LLM to reliably make multiple function calls in serial. While one call may be exactly what I'm looking for, there's a decent chance at least one of the calls will be slightly off, breaking the whole flow.
+I've had a lot of fun playing with LLMs recently. I think they get a lot of coverage in applications where they play the role of an [agent](https://www.pinecone.io/learn/series/langchain/langchain-agents/), but I've had pretty mixed results building these kinds of tools. In particular, I've had trouble getting the LLM to reliably make multiple function calls in serial. While one call may be exactly what I'm looking for, there's a decent chance at least one of the calls will be slightly off, breaking the whole flow.
 
 Where I've had _much_ more reliable results is in using LLMs for extracting structured results from unstructured input and in using them for text manipulation. These both rely less on the LLM being able to "think" and more on it being able to follow direct instructions.
 

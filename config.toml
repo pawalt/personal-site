@@ -85,6 +85,10 @@ pygmentsCodefences = true
     name = "Blog"
     url = "/posts"
   [[menu.main]]
+    identifier = "braindump"
+    name = "Braindump"
+    url = "/braindump"
+  [[menu.main]]
     identifier = "recipes"
     name = "Food"
     url = "/recipes"

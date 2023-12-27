@@ -2,7 +2,10 @@
 title = "NixOS on the desktop is a pain"
 description = "the truth big nix doesn't want you to know"
 date = "2023-12-24"
-tags = []
+tags = [
+  "nix",
+  "asahi",
+]
 +++
 
 Let me preface by saying, [NixOS](https://nixos.org/) running on [Asahi](https://asahilinux.org/) is the best Linux experience I've ever had. Every time I've run a Linux distro, I always end up hand-jamming config everywhere and forgetting about it. Over time this config builds up, and after ~1 year, a full wipe is in order. NixOS has basically solved this problem for me - all my configuration is versioned as code, so skew is impossible.

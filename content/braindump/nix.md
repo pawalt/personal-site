@@ -2,7 +2,9 @@
 title = "Nix"
 description = "it's actually pretty nice"
 date = "2023-12-23"
-tags = []
+tags = [
+  "nix",
+]
 +++
 
 [Nix](https://nixos.org/) is a tool for building reproducible environments. It excels in situations where it can have a full view of the world - where every package and piece of configuration is managed by Nix.

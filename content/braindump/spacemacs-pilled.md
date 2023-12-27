@@ -3,7 +3,7 @@ title = "Spacemacs-pilled"
 description = "more of a way of life"
 date = "2023-12-23"
 tags = [
-    "",
+    "vim",
 ]
 +++
 

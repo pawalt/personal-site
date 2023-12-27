@@ -2,7 +2,10 @@
 title = "Ollama"
 description = "oh llama my llama"
 date = "2023-12-23"
-tags = []
+tags = [
+  "ollama",
+  "llm",
+]
 +++
 
 [Ollama](https://ollama.ai/) is a tool for running LLMs locally, inspired by the DevX of Docker. It has a [model hub](https://ollama.ai/library) with the big-name models. You can run models very simply:

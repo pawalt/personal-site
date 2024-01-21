@@ -21,7 +21,7 @@ The harder part for me, though, is grokking how my own understanding is built. W
 
 ![kubernetes learning DAG with hidden horizontal availability](/img/kube_hidden_horizontal.svg)
 
-It's for all these reasons that I think that **most professors are very bad teachers**. High-level research staff are so far away from undergrads that they can't begin to empathize with their mindset. And they certainly can't introspect enough to fully understand how their DAG is built.
+It's for all these reasons that I think **most professors are very bad teachers**. High-level research staff are so far away from undergrads that they can't begin to empathize with their mindset. And they certainly can't introspect enough to fully understand how their DAG is built.
 
 Hopefully in the future we'll see more [classes taught by students](https://www.cis.upenn.edu/~cis19x/), [TAs that are undergrads](https://www.seas.upenn.edu/~cis120/24sp/staff/), and tenure structures that reward the [truly exceptional instructors](https://www.cis.upenn.edu/~swapneel/).
 

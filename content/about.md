@@ -3,10 +3,11 @@ title = "About"
 description = "A little bit about me"
 +++
 
-Hi there! I'm Peyton. Right now, I work at [Cockroach Labs](https://www.cockroachlabs.com/) building security features into [Cockroach Cloud](https://cockroachlabs.cloud/). Before that, I went to [Penn](https://www.upenn.edu/home) and taught [CIS 188](https://cis188.org/).
+Hi there! I'm Peyton. Right now, I work at [Modal Labs](https://modal.com/) building various bits of infrastructure.
 
 I like building systems, and I love talking about systems. I love cooking, but I'm pretty sure that's just another system. Some of my past projects:
 
+- The CockroachDB Cloud [Fine Grained Access Control](https://www.cockroachlabs.com/docs/cockroachcloud/authorization) system
 - [CIS 188](https://cis188.org/), a course that taught students modern deployment methodologies
 - [SPIRE TPM Plugin](https://github.com/bloomberg/spire-tpm-plugin), a set of plugins to allow [SPIRE](https://github.com/spiffe/spire) to do TPM 2-based node attestation
 - [Proxmox K3s](https://github.com/pawalt/proxmox-k3s), a set of automation allowing for zero-touch deployment of K3s on Proxmox

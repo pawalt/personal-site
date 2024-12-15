@@ -2,7 +2,7 @@
 title = "Half My Life"
 description = "it never goes how you expect"
 date = "2024-02-16"
-categories = [ "person", "post" ]
+categories = [ "personal", "post" ]
 tags = []
 +++
 

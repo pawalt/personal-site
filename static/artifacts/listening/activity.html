@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spotify Listening History Analyzer</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.7.1/nouislider.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.7.1/nouislider.min.js"></script>
+    <style>
+        :root {
+            --spotify-green: #1DB954;
+            --spotify-black: #191414;
+            --spotify-dark-gray: #282828;
+            --spotify-light-gray: #404040;
+            --text-primary: #FFFFFF;
+            --text-secondary: #B3B3B3;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: var(--spotify-black);
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+            padding-left: 10em;
+            padding-right: 10em;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            color: var(--spotify-green);
+            text-align: center;
+            font-weight: 800;
+        }
+
+        h2 {
+            font-size: 1.8rem;
+            margin: 2rem 0 1rem;
+            color: var(--text-primary);
+        }
+
+        .file-input {
+            background: var(--spotify-dark-gray);
+            padding: 2rem;
+            border-radius: 8px;
+            text-align: center;
+            margin-bottom: 2rem;
+            border: 2px dashed var(--spotify-light-gray);
+            transition: all 0.3s ease;
+        }
+
+        .file-input:hover {
+            border-color: var(--spotify-green);
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+
+        .file-input label {
+            background: var(--spotify-green);
+            padding: 0.8rem 1.5rem;
+            border-radius: 500px;
+            color: white;
+            cursor: pointer;
+            display: inline-block;
+            margin-bottom: 1rem;
+            font-weight: 600;
+            transition: transform 0.2s ease;
+        }
+
+        .file-input label:hover {
+            transform: scale(1.05);
+        }
+
+        .file-input p {
+            color: var(--text-secondary);
+        }
+
+        .slider-container {
+            background: var(--spotify-dark-gray);
+            padding: 2rem;
+            border-radius: 8px;
+            margin: 2rem 0;
+        }
+
+        #dateSlider {
+            height: 8px;
+        }
+
+        .date-labels {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 1rem;
+            color: var(--text-secondary);
+        }
+
+        .listening-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .stat-item {
+            background: var(--spotify-dark-gray);
+            padding: 1.5rem;
+            border-radius: 8px;
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        .stat-item:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-item h4 {
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+            font-size: 1rem;
+        }
+
+        .stat-item div {
+            color: var(--spotify-green);
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .stat-box {
+            background: var(--spotify-dark-gray);
+            padding: 1.5rem;
+            border-radius: 8px;
+            height: 100%;
+        }
+
+        .stat-box h3 {
+            color: var(--spotify-green);
+            margin-bottom: 1rem;
+            font-size: 1.3rem;
+        }
+
+        .stat-box ol {
+            list-style-position: inside;
+            color: var(--text-secondary);
+        }
+
+        .stat-box li {
+            margin: 0.5rem 0;
+            padding: 0.5rem;
+            border-radius: 4px;
+            transition: background-color 0.2s ease;
+        }
+
+        .stat-box li:hover {
+            background: var(--spotify-light-gray);
+        }
+
+        #artistChart {
+            background: var(--spotify-dark-gray);
+            padding: 1rem;
+            border-radius: 8px;
+            max-height: 400px;
+        }
+
+        .noUi-connect {
+            background: var(--spotify-green);
+        }
+
+        .noUi-handle {
+            border-radius: 50%;
+            background: var(--spotify-green);
+            box-shadow: none;
+            border: none;
+            cursor: pointer;
+            width: 20px !important;
+            height: 20px !important;
+            right: -10px !important;
+            top: -7px !important;
+        }
+
+        .noUi-handle:before,
+        .noUi-handle:after {
+            display: none;
+        }
+
+        .noUi-tooltip {
+            background: var(--spotify-dark-gray);
+            color: var(--text-primary);
+            border: 1px solid var(--spotify-light-gray);
+            font-size: 0.8rem;
+            padding: 0.3rem 0.6rem;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            .stat-item div {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container"></div>
+        <h1>Spotify Listening History Analyzer</h1>
+        
+        <div class="file-input">
+            <label for="fileInput">Choose your Spotify data files</label>
+            <input type="file" id="fileInput" accept=".json" multiple>
+            <p>Select one or more Spotify listening history JSON files</p>
+        </div>
+
+        <div class="slider-container">
+            <div id="dateSlider"></div>
+            <div class="date-labels">
+                <span id="startDate"></span>
+                <span id="endDate"></span>
+            </div>
+        </div>
+
+        <div class="listening-stats">
+            <div class="stat-item">
+                <h4>Total Listening Time</h4>
+                <div id="totalTime">-</div>
+            </div>
+            <div class="stat-item">
+                <h4>Total Tracks</h4>
+                <div id="totalTracks">-</div>
+            </div>
+            <div class="stat-item">
+                <h4>Unique Artists</h4>
+                <div id="uniqueArtists">-</div>
+            </div>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-box">
+                <h3>Top Tracks</h3>
+                <ol id="topTracks"></ol>
+            </div>
+            <div class="stat-box">
+                <h3>Top Artists</h3>
+                <ol id="topArtists"></ol>
+            </div>
+            <div class="stat-box">
+                <h3>Top Albums</h3>
+                <ol id="topAlbums"></ol>
+            </div>
+        </div>
+
+        <h2>Artist Listening Frequency</h2>
+        <canvas id="artistChart"></canvas>
+    </div>
+
+    <script>
+        let listeningData = [];
+        let chart = null;
+        let slider = null;
+
+        document.getElementById('fileInput').addEventListener('change', async function(e) {
+            const files = Array.from(e.target.files);
+            if (files.length === 0) return;
+
+            try {
+                // Reset listening data
+                listeningData = [];
+                
+                // Process all files
+                for (const file of files) {
+                    const data = await new Promise((resolve, reject) => {
+                        const reader = new FileReader();
+                        reader.onload = e => {
+                            try {
+                                resolve(JSON.parse(e.target.result));
+                            } catch (error) {
+                                reject(error);
+                            }
+                        };
+                        reader.onerror = () => reject(reader.error);
+                        reader.readAsText(file);
+                    });
+                    
+                    // Append the data from this file
+                    listeningData = listeningData.concat(data);
+                }
+
+                // Initialize visualization with combined data
+                initializeVisualization();
+            } catch (error) {
+                console.error('Error processing files:', error);
+                alert(`Error processing one or more files. Please make sure they are valid JSON files.
+This also can't support too much data at once, so try fewer files.`);
+            }
+        });
+
+        function initializeVisualization() {
+            // Sort data by timestamp
+            listeningData.sort((a, b) => new Date(a.ts) - new Date(b.ts));
+            
+            // Set up date slider
+            const dates = listeningData.map(d => new Date(d.ts));
+            const minDate = new Date(Math.min(...dates));
+            const maxDate = new Date(Math.max(...dates));
+
+            if (slider) {
+                slider.destroy();
+            }
+
+            slider = noUiSlider.create(document.getElementById('dateSlider'), {
+                start: [minDate.getTime(), maxDate.getTime()],
+                connect: true,
+                range: {
+                    'min': minDate.getTime(),
+                    'max': maxDate.getTime()
+                },
+                step: 24 * 60 * 60 * 1000, // One day
+                tooltips: {
+                    to: function(value) {
+                        return new Date(parseInt(value)).toLocaleDateString();
+                    }
+                }
+            });
+
+            // Update date labels
+            document.getElementById('startDate').textContent = minDate.toLocaleDateString();
+            document.getElementById('endDate').textContent = maxDate.toLocaleDateString();
+
+            slider.on('update', function(values) {
+                const [start, end] = values.map(v => new Date(parseInt(v)));
+                document.getElementById('startDate').textContent = start.toLocaleDateString();
+                document.getElementById('endDate').textContent = end.toLocaleDateString();
+                updateVisualization(start, end);
+            });
+
+            // Initial visualization
+            updateVisualization(minDate, maxDate);
+        }
+
+        function formatDuration(ms) {
+            const hours = Math.floor(ms / (1000 * 60 * 60));
+            const minutes = Math.floor((ms % (1000 * 60 * 60)) / (1000 * 60));
+            return `${hours}h ${minutes}m`;
+        }
+
+        function updateVisualization(startDate, endDate) {
+            const endDateAdjusted = new Date(endDate);
+            endDateAdjusted.setHours(23, 59, 59, 999); // Include the entire end date
+            
+            // Filter data by date range
+            const filteredData = listeningData.filter(d => {
+                const date = new Date(d.ts);
+                return date >= startDate && date <= endDateAdjusted;
+            });
+
+            // Calculate statistics
+            const trackCounts = {};
+            const artistCounts = {};
+            const albumCounts = {};
+            let totalPlayTime = 0;
+            const uniqueArtists = new Set();
+
+            filteredData.forEach(d => {
+                const track = d.master_metadata_track_name;
+                const artist = d.master_metadata_album_artist_name;
+                const album = d.master_metadata_album_album_name;
+
+                if (track && d.ms_played > 30000) { // Only count if played for more than 30 seconds
+                    trackCounts[track] = (trackCounts[track] || 0) + 1;
+                    artistCounts[artist] = (artistCounts[artist] || 0) + 1;
+                    albumCounts[album] = (albumCounts[album] || 0) + 1;
+                    totalPlayTime += d.ms_played;
+                    uniqueArtists.add(artist);
+                }
+            });
+
+            // Update summary stats
+            document.getElementById('totalTime').textContent = formatDuration(totalPlayTime);
+            document.getElementById('totalTracks').textContent = Object.values(trackCounts).reduce((a, b) => a + b, 0);
+            document.getElementById('uniqueArtists').textContent = uniqueArtists.size;
+
+            // Update top lists
+            updateTopList('topTracks', trackCounts);
+            updateTopList('topArtists', artistCounts);
+            updateTopList('topAlbums', albumCounts);
+
+            // Update artist frequency chart
+            updateArtistChart(filteredData);
+        }
+
+        function updateTopList(elementId, counts) {
+            const sortedItems = Object.entries(counts)
+                .sort((a, b) => b[1] - a[1])
+                .slice(0, 10);
+
+            const list = document.getElementById(elementId);
+            list.innerHTML = sortedItems
+                .map(([item, count]) => `<li>${item} (${count} plays)</li>`)
+                .join('');
+        }
+
+        function updateArtistChart(filteredData) {
+            // Group by day and artist
+            const dailyArtistPlays = {};
+            
+            filteredData.forEach(d => {
+                const date = d.ts.split('T')[0];
+                const artist = d.master_metadata_album_artist_name;
+                
+                if (!dailyArtistPlays[date]) {
+                    dailyArtistPlays[date] = {};
+                }
+                
+                if (artist && d.ms_played > 30000) {
+                    dailyArtistPlays[date][artist] = (dailyArtistPlays[date][artist] || 0) + 1;
+                }
+            });
+
+            // Get top 5 artists overall
+            const artistTotalPlays = {};
+            Object.values(dailyArtistPlays).forEach(dayData => {
+                Object.entries(dayData).forEach(([artist, plays]) => {
+                    artistTotalPlays[artist] = (artistTotalPlays[artist] || 0) + plays;
+                });
+            });
+
+            const topArtists = Object.entries(artistTotalPlays)
+                .sort((a, b) => b[1] - a[1])
+                .slice(0, 5)
+                .map(([artist]) => artist);
+
+            // Prepare chart data
+            const dates = Object.keys(dailyArtistPlays).sort();
+            const datasets = topArtists.map(artist => ({
+                label: artist,
+                data: dates.map(date => dailyArtistPlays[date][artist] || 0),
+                fill: false,
+                tension: 0.4
+            }));
+
+            // Create or update chart
+            const ctx = document.getElementById('artistChart').getContext('2d');
+            
+            if (chart) {
+                chart.destroy();
+            }
+
+            chart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: dates,
+                    datasets: datasets
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Plays per Day'
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Date'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'top'
+                        },
+                        title: {
+                            display: true,
+                            text: 'Top Artists Listening Frequency'
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>

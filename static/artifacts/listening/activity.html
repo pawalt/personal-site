@@ -328,6 +328,7 @@
         let chart = null;
         let slider = null;
         let histogramChart = null;
+        let dateBuckets = {};
 
         document.getElementById('fileInput').addEventListener('change', async function(e) {
             const files = Array.from(e.target.files);
@@ -369,11 +370,55 @@ This also can't support too much data at once, so try fewer files.`);
             // Sort data by timestamp
             listeningData.sort((a, b) => new Date(a.ts) - new Date(b.ts));
             
-            // Set up date slider
+            // Pre-calculate date buckets
             const dates = listeningData.map(d => new Date(d.ts));
             const minDate = new Date(Math.min(...dates));
             const maxDate = new Date(Math.max(...dates));
 
+            // Pre-calculate all possible buckets
+            dateBuckets = {
+                daily: {},
+                weekly: {},
+                monthly: {}
+            };
+
+            // Initialize bucket structure
+            listeningData.forEach(d => {
+                const date = new Date(d.ts);
+                
+                // Daily bucket (YYYY-MM-DD)
+                const dailyKey = d.ts.split('T')[0];
+                
+                // Monthly bucket (YYYY-MM)
+                const monthlyKey = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}`;
+                
+                // Weekly bucket (based on 7-day intervals from start)
+                const daysSinceStart = Math.floor((date - minDate) / (1000 * 60 * 60 * 24));
+                const weekNumber = Math.floor(daysSinceStart / 7);
+                const weeklyKey = `Week${weekNumber}`;
+                
+                // Initialize bucket counters if they don't exist
+                dateBuckets.daily[dailyKey] = dateBuckets.daily[dailyKey] || { tracks: 0, artists: {} };
+                dateBuckets.weekly[weeklyKey] = dateBuckets.weekly[weeklyKey] || { tracks: 0, artists: {}, startDate: new Date(minDate.getTime() + weekNumber * 7 * 24 * 60 * 60 * 1000) };
+                dateBuckets.monthly[monthlyKey] = dateBuckets.monthly[monthlyKey] || { tracks: 0, artists: {} };
+                
+                // Only count if played for more than 30 seconds
+                if (d.ms_played > 30000) {
+                    // Update counters
+                    dateBuckets.daily[dailyKey].tracks++;
+                    dateBuckets.weekly[weeklyKey].tracks++;
+                    dateBuckets.monthly[monthlyKey].tracks++;
+                    
+                    const artist = d.master_metadata_album_artist_name;
+                    if (artist) {
+                        dateBuckets.daily[dailyKey].artists[artist] = (dateBuckets.daily[dailyKey].artists[artist] || 0) + 1;
+                        dateBuckets.weekly[weeklyKey].artists[artist] = (dateBuckets.weekly[weeklyKey].artists[artist] || 0) + 1;
+                        dateBuckets.monthly[monthlyKey].artists[artist] = (dateBuckets.monthly[monthlyKey].artists[artist] || 0) + 1;
+                    }
+                }
+            });
+
+            // Set up date slider
             if (slider) {
                 slider.destroy();
             }
@@ -475,41 +520,25 @@ This also can't support too much data at once, so try fewer files.`);
 
         function updateArtistChart(filteredData) {
             const timeScale = document.getElementById('timeScale').value;
-            const dailyArtistPlays = {};
+            const startDate = new Date(filteredData[0].ts);
+            const endDate = new Date(filteredData[filteredData.length - 1].ts);
             
-            filteredData.forEach(d => {
-                let date = new Date(d.ts);
-                let bucketKey;
-                
-                switch(timeScale) {
-                    case 'monthly':
-                        bucketKey = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}`;
-                        break;
-                    case 'weekly':
-                        // Get Monday of the week
-                        const day = date.getDay();
-                        const diff = date.getDate() - day + (day === 0 ? -6 : 1);
-                        const monday = new Date(date.setDate(diff));
-                        bucketKey = monday.toISOString().split('T')[0];
-                        break;
-                    default: // daily
-                        bucketKey = d.ts.split('T')[0];
-                }
-                
-                if (!dailyArtistPlays[bucketKey]) {
-                    dailyArtistPlays[bucketKey] = {};
-                }
-                
-                const artist = d.master_metadata_album_artist_name;
-                if (artist && d.ms_played > 30000) {
-                    dailyArtistPlays[bucketKey][artist] = (dailyArtistPlays[bucketKey][artist] || 0) + 1;
-                }
-            });
+            // Get relevant buckets for the date range
+            const relevantBuckets = Object.entries(dateBuckets[timeScale])
+                .filter(([_, data]) => {
+                    const bucketDate = timeScale === 'weekly' ? data.startDate : new Date(_.split('Week')[1] ? _ : _);
+                    return bucketDate >= startDate && bucketDate <= endDate;
+                })
+                .sort((a, b) => {
+                    const dateA = timeScale === 'weekly' ? a[1].startDate : new Date(a[0]);
+                    const dateB = timeScale === 'weekly' ? b[1].startDate : new Date(b[0]);
+                    return dateA - dateB;
+                });
 
-            // Get top 5 artists overall
+            // Get top 5 artists from the filtered data
             const artistTotalPlays = {};
-            Object.values(dailyArtistPlays).forEach(dayData => {
-                Object.entries(dayData).forEach(([artist, plays]) => {
+            relevantBuckets.forEach(([_, data]) => {
+                Object.entries(data.artists).forEach(([artist, plays]) => {
                     artistTotalPlays[artist] = (artistTotalPlays[artist] || 0) + plays;
                 });
             });
@@ -520,10 +549,13 @@ This also can't support too much data at once, so try fewer files.`);
                 .map(([artist]) => artist);
 
             // Prepare chart data
-            const dates = Object.keys(dailyArtistPlays).sort();
+            const labels = relevantBuckets.map(([key, data]) => 
+                timeScale === 'weekly' ? data.startDate.toISOString().split('T')[0] : key
+            );
+
             const datasets = topArtists.map(artist => ({
                 label: artist,
-                data: dates.map(date => dailyArtistPlays[date][artist] || 0),
+                data: relevantBuckets.map(([_, data]) => data.artists[artist] || 0),
                 fill: false,
                 tension: 0.4
             }));
@@ -538,7 +570,7 @@ This also can't support too much data at once, so try fewer files.`);
             chart = new Chart(ctx, {
                 type: 'line',
                 data: {
-                    labels: dates,
+                    labels: labels,
                     datasets: datasets
                 },
                 options: {
@@ -573,34 +605,25 @@ This also can't support too much data at once, so try fewer files.`);
 
         function updateHistogram(filteredData) {
             const timeScale = document.getElementById('histogramScale').value;
-            const trackCounts = {};
-            
-            filteredData.forEach(d => {
-                let date = new Date(d.ts);
-                let bucketKey;
-                
-                switch(timeScale) {
-                    case 'monthly':
-                        bucketKey = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}`;
-                        break;
-                    case 'weekly':
-                        const day = date.getDay();
-                        const diff = date.getDate() - day + (day === 0 ? -6 : 1);
-                        const monday = new Date(date.setDate(diff));
-                        bucketKey = monday.toISOString().split('T')[0];
-                        break;
-                    default: // daily
-                        bucketKey = d.ts.split('T')[0];
-                }
-                
-                // Only count tracks played for more than 30 seconds
-                if (d.ms_played > 30000) {
-                    trackCounts[bucketKey] = (trackCounts[bucketKey] || 0) + 1;
-                }
-            });
+            const startDate = new Date(filteredData[0].ts);
+            const endDate = new Date(filteredData[filteredData.length - 1].ts);
 
-            const labels = Object.keys(trackCounts).sort();
-            const data = labels.map(key => trackCounts[key]);
+            // Get relevant buckets for the date range
+            const relevantBuckets = Object.entries(dateBuckets[timeScale])
+                .filter(([_, data]) => {
+                    const bucketDate = timeScale === 'weekly' ? data.startDate : new Date(_.split('Week')[1] ? _ : _);
+                    return bucketDate >= startDate && bucketDate <= endDate;
+                })
+                .sort((a, b) => {
+                    const dateA = timeScale === 'weekly' ? a[1].startDate : new Date(a[0]);
+                    const dateB = timeScale === 'weekly' ? b[1].startDate : new Date(b[0]);
+                    return dateA - dateB;
+                });
+
+            const labels = relevantBuckets.map(([key, data]) => 
+                timeScale === 'weekly' ? data.startDate.toISOString().split('T')[0] : key
+            );
+            const data = relevantBuckets.map(([_, data]) => data.tracks);
 
             const ctx = document.getElementById('histogramChart').getContext('2d');
             

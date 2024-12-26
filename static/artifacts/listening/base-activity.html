@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spotify Listening History Analyzer</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.7.1/nouislider.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.7.1/nouislider.min.js"></script>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .stat-box {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 6px;
+            border: 1px solid #dee2e6;
+        }
+        .stat-box h3 {
+            margin-top: 0;
+            color: #343a40;
+        }
+        .slider-container {
+            margin: 40px 0;
+            padding: 0 10px;
+        }
+        #dateSlider {
+            height: 20px;
+        }
+        .date-labels {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+        }
+        .file-input {
+            margin-bottom: 20px;
+        }
+        #artistChart {
+            max-height: 400px;
+        }
+        .listening-stats {
+            display: flex;
+            gap: 20px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        .stat-item {
+            background: #e9ecef;
+            padding: 10px;
+            border-radius: 4px;
+            flex: 1;
+            min-width: 200px;
+        }
+        .noUi-connect {
+            background: #1db954;
+        }
+        .noUi-handle {
+            border-radius: 3px;
+            background: #fff;
+            cursor: pointer;
+        }
+        .noUi-tooltip {
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Spotify Listening History Analyzer</h1>
+        
+        <div class="file-input">
+            <input type="file" id="fileInput" accept=".json">
+            <p>Select your Spotify listening history JSON file</p>
+        </div>
+
+        <div class="slider-container">
+            <div id="dateSlider"></div>
+            <div class="date-labels">
+                <span id="startDate"></span>
+                <span id="endDate"></span>
+            </div>
+        </div>
+
+        <div class="listening-stats">
+            <div class="stat-item">
+                <h4>Total Listening Time</h4>
+                <div id="totalTime">-</div>
+            </div>
+            <div class="stat-item">
+                <h4>Total Tracks</h4>
+                <div id="totalTracks">-</div>
+            </div>
+            <div class="stat-item">
+                <h4>Unique Artists</h4>
+                <div id="uniqueArtists">-</div>
+            </div>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-box">
+                <h3>Top Tracks</h3>
+                <ol id="topTracks"></ol>
+            </div>
+            <div class="stat-box">
+                <h3>Top Artists</h3>
+                <ol id="topArtists"></ol>
+            </div>
+            <div class="stat-box">
+                <h3>Top Albums</h3>
+                <ol id="topAlbums"></ol>
+            </div>
+        </div>
+
+        <div class="container">
+            <h2>Artist Listening Frequency Over Time</h2>
+            <canvas id="artistChart"></canvas>
+        </div>
+    </div>
+
+    <script>
+        let listeningData = [];
+        let chart = null;
+        let slider = null;
+
+        document.getElementById('fileInput').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    try {
+                        listeningData = JSON.parse(e.target.result);
+                        initializeVisualization();
+                    } catch (error) {
+                        console.error('Error parsing JSON:', error);
+                        alert('Error parsing the file. Please make sure it\'s a valid JSON file.');
+                    }
+                };
+                reader.readAsText(file);
+            }
+        });
+
+        function initializeVisualization() {
+            // Sort data by timestamp
+            listeningData.sort((a, b) => new Date(a.ts) - new Date(b.ts));
+            
+            // Set up date slider
+            const dates = listeningData.map(d => new Date(d.ts));
+            const minDate = new Date(Math.min(...dates));
+            const maxDate = new Date(Math.max(...dates));
+
+            if (slider) {
+                slider.destroy();
+            }
+
+            slider = noUiSlider.create(document.getElementById('dateSlider'), {
+                start: [minDate.getTime(), maxDate.getTime()],
+                connect: true,
+                range: {
+                    'min': minDate.getTime(),
+                    'max': maxDate.getTime()
+                },
+                step: 24 * 60 * 60 * 1000, // One day
+                tooltips: {
+                    to: function(value) {
+                        return new Date(parseInt(value)).toLocaleDateString();
+                    }
+                }
+            });
+
+            // Update date labels
+            document.getElementById('startDate').textContent = minDate.toLocaleDateString();
+            document.getElementById('endDate').textContent = maxDate.toLocaleDateString();
+
+            slider.on('update', function(values) {
+                const [start, end] = values.map(v => new Date(parseInt(v)));
+                document.getElementById('startDate').textContent = start.toLocaleDateString();
+                document.getElementById('endDate').textContent = end.toLocaleDateString();
+                updateVisualization(start, end);
+            });
+
+            // Initial visualization
+            updateVisualization(minDate, maxDate);
+        }
+
+        function formatDuration(ms) {
+            const hours = Math.floor(ms / (1000 * 60 * 60));
+            const minutes = Math.floor((ms % (1000 * 60 * 60)) / (1000 * 60));
+            return `${hours}h ${minutes}m`;
+        }
+
+        function updateVisualization(startDate, endDate) {
+            const endDateAdjusted = new Date(endDate);
+            endDateAdjusted.setHours(23, 59, 59, 999); // Include the entire end date
+            
+            // Filter data by date range
+            const filteredData = listeningData.filter(d => {
+                const date = new Date(d.ts);
+                return date >= startDate && date <= endDateAdjusted;
+            });
+
+            // Calculate statistics
+            const trackCounts = {};
+            const artistCounts = {};
+            const albumCounts = {};
+            let totalPlayTime = 0;
+            const uniqueArtists = new Set();
+
+            filteredData.forEach(d => {
+                const track = d.master_metadata_track_name;
+                const artist = d.master_metadata_album_artist_name;
+                const album = d.master_metadata_album_album_name;
+
+                if (track && d.ms_played > 30000) { // Only count if played for more than 30 seconds
+                    trackCounts[track] = (trackCounts[track] || 0) + 1;
+                    artistCounts[artist] = (artistCounts[artist] || 0) + 1;
+                    albumCounts[album] = (albumCounts[album] || 0) + 1;
+                    totalPlayTime += d.ms_played;
+                    uniqueArtists.add(artist);
+                }
+            });
+
+            // Update summary stats
+            document.getElementById('totalTime').textContent = formatDuration(totalPlayTime);
+            document.getElementById('totalTracks').textContent = Object.values(trackCounts).reduce((a, b) => a + b, 0);
+            document.getElementById('uniqueArtists').textContent = uniqueArtists.size;
+
+            // Update top lists
+            updateTopList('topTracks', trackCounts);
+            updateTopList('topArtists', artistCounts);
+            updateTopList('topAlbums', albumCounts);
+
+            // Update artist frequency chart
+            updateArtistChart(filteredData);
+        }
+
+        function updateTopList(elementId, counts) {
+            const sortedItems = Object.entries(counts)
+                .sort((a, b) => b[1] - a[1])
+                .slice(0, 10);
+
+            const list = document.getElementById(elementId);
+            list.innerHTML = sortedItems
+                .map(([item, count]) => `<li>${item} (${count} plays)</li>`)
+                .join('');
+        }
+
+        function updateArtistChart(filteredData) {
+            // Group by day and artist
+            const dailyArtistPlays = {};
+            
+            filteredData.forEach(d => {
+                const date = d.ts.split('T')[0];
+                const artist = d.master_metadata_album_artist_name;
+                
+                if (!dailyArtistPlays[date]) {
+                    dailyArtistPlays[date] = {};
+                }
+                
+                if (artist && d.ms_played > 30000) {
+                    dailyArtistPlays[date][artist] = (dailyArtistPlays[date][artist] || 0) + 1;
+                }
+            });
+
+            // Get top 5 artists overall
+            const artistTotalPlays = {};
+            Object.values(dailyArtistPlays).forEach(dayData => {
+                Object.entries(dayData).forEach(([artist, plays]) => {
+                    artistTotalPlays[artist] = (artistTotalPlays[artist] || 0) + plays;
+                });
+            });
+
+            const topArtists = Object.entries(artistTotalPlays)
+                .sort((a, b) => b[1] - a[1])
+                .slice(0, 5)
+                .map(([artist]) => artist);
+
+            // Prepare chart data
+            const dates = Object.keys(dailyArtistPlays).sort();
+            const datasets = topArtists.map(artist => ({
+                label: artist,
+                data: dates.map(date => dailyArtistPlays[date][artist] || 0),
+                fill: false,
+                tension: 0.4
+            }));
+
+            // Create or update chart
+            const ctx = document.getElementById('artistChart').getContext('2d');
+            
+            if (chart) {
+                chart.destroy();
+            }
+
+            chart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: dates,
+                    datasets: datasets
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Plays per Day'
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Date'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'top'
+                        },
+                        title: {
+                            display: true,
+                            text: 'Top Artists Listening Frequency'
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>

@@ -335,8 +335,12 @@
             if (files.length === 0) return;
 
             try {
-                // Reset listening data
+                // Reset listening data and show loading state
                 listeningData = [];
+                
+                // Process files in chunks
+                let minDate = new Date('9999-12-31');
+                let maxDate = new Date('1970-01-01');
                 
                 // Process all files
                 for (const file of files) {
@@ -344,7 +348,14 @@
                         const reader = new FileReader();
                         reader.onload = e => {
                             try {
-                                resolve(JSON.parse(e.target.result));
+                                const fileData = JSON.parse(e.target.result);
+                                // Update min/max dates while processing each file
+                                fileData.forEach(item => {
+                                    const date = new Date(item.ts);
+                                    if (date < minDate) minDate = date;
+                                    if (date > maxDate) maxDate = date;
+                                });
+                                resolve(fileData);
                             } catch (error) {
                                 reject(error);
                             }
@@ -357,66 +368,30 @@
                     listeningData = listeningData.concat(data);
                 }
 
-                // Initialize visualization with combined data
-                initializeVisualization();
+                // Initialize visualization with combined data and pre-calculated min/max dates
+                initializeVisualization(minDate, maxDate);
             } catch (error) {
                 console.error('Error processing files:', error);
-                alert(`Error processing one or more files. Please make sure they are valid JSON files.
-This also can't support too much data at once, so try fewer files.`);
+                alert('Error processing files. Check console for details.');
             }
         });
 
-        function initializeVisualization() {
-            // Sort data by timestamp
-            listeningData.sort((a, b) => new Date(a.ts) - new Date(b.ts));
+        function initializeVisualization(minDate, maxDate) {
+            // No need to sort entire array or calculate min/max dates again
             
-            // Pre-calculate date buckets
-            const dates = listeningData.map(d => new Date(d.ts));
-            const minDate = new Date(Math.min(...dates));
-            const maxDate = new Date(Math.max(...dates));
-
-            // Pre-calculate all possible buckets
+            // Pre-calculate date buckets using a more efficient approach
             dateBuckets = {
-                daily: {},
-                weekly: {},
-                monthly: {}
+                daily: new Map(),
+                weekly: new Map(),
+                monthly: new Map()
             };
 
-            // Initialize bucket structure
-            listeningData.forEach(d => {
-                const date = new Date(d.ts);
-                
-                // Daily bucket (YYYY-MM-DD)
-                const dailyKey = d.ts.split('T')[0];
-                
-                // Monthly bucket (YYYY-MM)
-                const monthlyKey = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}`;
-                
-                // Weekly bucket (based on 7-day intervals from start)
-                const daysSinceStart = Math.floor((date - minDate) / (1000 * 60 * 60 * 24));
-                const weekNumber = Math.floor(daysSinceStart / 7);
-                const weeklyKey = `Week${weekNumber}`;
-                
-                // Initialize bucket counters if they don't exist
-                dateBuckets.daily[dailyKey] = dateBuckets.daily[dailyKey] || { tracks: 0, artists: {} };
-                dateBuckets.weekly[weeklyKey] = dateBuckets.weekly[weeklyKey] || { tracks: 0, artists: {}, startDate: new Date(minDate.getTime() + weekNumber * 7 * 24 * 60 * 60 * 1000) };
-                dateBuckets.monthly[monthlyKey] = dateBuckets.monthly[monthlyKey] || { tracks: 0, artists: {} };
-                
-                // Only count if played for more than 30 seconds
-                if (d.ms_played > 30000) {
-                    // Update counters
-                    dateBuckets.daily[dailyKey].tracks++;
-                    dateBuckets.weekly[weeklyKey].tracks++;
-                    dateBuckets.monthly[monthlyKey].tracks++;
-                    
-                    const artist = d.master_metadata_album_artist_name;
-                    if (artist) {
-                        dateBuckets.daily[dailyKey].artists[artist] = (dateBuckets.daily[dailyKey].artists[artist] || 0) + 1;
-                        dateBuckets.weekly[weeklyKey].artists[artist] = (dateBuckets.weekly[weeklyKey].artists[artist] || 0) + 1;
-                        dateBuckets.monthly[monthlyKey].artists[artist] = (dateBuckets.monthly[monthlyKey].artists[artist] || 0) + 1;
-                    }
-                }
-            });
+            // Process data in chunks to avoid call stack issues
+            const CHUNK_SIZE = 1000;
+            for (let i = 0; i < listeningData.length; i += CHUNK_SIZE) {
+                const chunk = listeningData.slice(i, i + CHUNK_SIZE);
+                processDataChunk(chunk, minDate);
+            }
 
             // Set up date slider
             if (slider) {
@@ -430,7 +405,7 @@ This also can't support too much data at once, so try fewer files.`);
                     'min': minDate.getTime(),
                     'max': maxDate.getTime()
                 },
-                step: 24 * 60 * 60 * 1000, // One day
+                step: 24 * 60 * 60 * 1000,
                 tooltips: {
                     to: function(value) {
                         return new Date(parseInt(value)).toLocaleDateString();
@@ -442,15 +417,72 @@ This also can't support too much data at once, so try fewer files.`);
             document.getElementById('startDate').textContent = minDate.toLocaleDateString();
             document.getElementById('endDate').textContent = maxDate.toLocaleDateString();
 
-            slider.on('update', function(values) {
+            slider.on('update', debounce(function(values) {
                 const [start, end] = values.map(v => new Date(parseInt(v)));
                 document.getElementById('startDate').textContent = start.toLocaleDateString();
                 document.getElementById('endDate').textContent = end.toLocaleDateString();
                 updateVisualization(start, end);
-            });
+            }, 250)); // Add debounce to prevent too frequent updates
 
             // Initial visualization
             updateVisualization(minDate, maxDate);
+        }
+
+        function processDataChunk(chunk, minDate) {
+            chunk.forEach(d => {
+                if (d.ms_played <= 30000) return; // Skip short plays
+
+                const date = new Date(d.ts);
+                
+                // Daily bucket (YYYY-MM-DD)
+                const dailyKey = d.ts.split('T')[0];
+                
+                // Monthly bucket (YYYY-MM)
+                const monthlyKey = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}`;
+                
+                // Weekly bucket
+                const daysSinceStart = Math.floor((date - minDate) / (1000 * 60 * 60 * 24));
+                const weekNumber = Math.floor(daysSinceStart / 7);
+                const weeklyKey = `Week${weekNumber}`;
+
+                // Update buckets using Map
+                updateBucket(dateBuckets.daily, dailyKey, d);
+                updateBucket(dateBuckets.weekly, weeklyKey, d, minDate, weekNumber);
+                updateBucket(dateBuckets.monthly, monthlyKey, d);
+            });
+        }
+
+        function updateBucket(bucketMap, key, data, minDate = null, weekNumber = null) {
+            if (!bucketMap.has(key)) {
+                bucketMap.set(key, {
+                    tracks: 0,
+                    artists: new Map(),
+                    startDate: weekNumber !== null ? 
+                        new Date(minDate.getTime() + weekNumber * 7 * 24 * 60 * 60 * 1000) : 
+                        null
+                });
+            }
+
+            const bucket = bucketMap.get(key);
+            bucket.tracks++;
+
+            const artist = data.master_metadata_album_artist_name;
+            if (artist) {
+                bucket.artists.set(artist, (bucket.artists.get(artist) || 0) + 1);
+            }
+        }
+
+        // Add debounce utility function
+        function debounce(func, wait) {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
         }
 
         function formatDuration(ms) {
@@ -524,9 +556,10 @@ This also can't support too much data at once, so try fewer files.`);
             const endDate = new Date(filteredData[filteredData.length - 1].ts);
             
             // Get relevant buckets for the date range
-            const relevantBuckets = Object.entries(dateBuckets[timeScale])
-                .filter(([_, data]) => {
-                    const bucketDate = timeScale === 'weekly' ? data.startDate : new Date(_.split('Week')[1] ? _ : _);
+            const bucketMap = dateBuckets[timeScale];
+            const relevantBuckets = Array.from(bucketMap.entries())
+                .filter(([key, data]) => {
+                    const bucketDate = timeScale === 'weekly' ? data.startDate : new Date(key);
                     return bucketDate >= startDate && bucketDate <= endDate;
                 })
                 .sort((a, b) => {
@@ -536,14 +569,14 @@ This also can't support too much data at once, so try fewer files.`);
                 });
 
             // Get top 5 artists from the filtered data
-            const artistTotalPlays = {};
+            const artistTotalPlays = new Map();
             relevantBuckets.forEach(([_, data]) => {
-                Object.entries(data.artists).forEach(([artist, plays]) => {
-                    artistTotalPlays[artist] = (artistTotalPlays[artist] || 0) + plays;
+                data.artists.forEach((plays, artist) => {
+                    artistTotalPlays.set(artist, (artistTotalPlays.get(artist) || 0) + plays);
                 });
             });
 
-            const topArtists = Object.entries(artistTotalPlays)
+            const topArtists = Array.from(artistTotalPlays.entries())
                 .sort((a, b) => b[1] - a[1])
                 .slice(0, 5)
                 .map(([artist]) => artist);
@@ -555,7 +588,7 @@ This also can't support too much data at once, so try fewer files.`);
 
             const datasets = topArtists.map(artist => ({
                 label: artist,
-                data: relevantBuckets.map(([_, data]) => data.artists[artist] || 0),
+                data: relevantBuckets.map(([_, data]) => data.artists.get(artist) || 0),
                 fill: false,
                 tension: 0.4
             }));
@@ -609,9 +642,10 @@ This also can't support too much data at once, so try fewer files.`);
             const endDate = new Date(filteredData[filteredData.length - 1].ts);
 
             // Get relevant buckets for the date range
-            const relevantBuckets = Object.entries(dateBuckets[timeScale])
-                .filter(([_, data]) => {
-                    const bucketDate = timeScale === 'weekly' ? data.startDate : new Date(_.split('Week')[1] ? _ : _);
+            const bucketMap = dateBuckets[timeScale];
+            const relevantBuckets = Array.from(bucketMap.entries())
+                .filter(([key, data]) => {
+                    const bucketDate = timeScale === 'weekly' ? data.startDate : new Date(key);
                     return bucketDate >= startDate && bucketDate <= endDate;
                 })
                 .sort((a, b) => {

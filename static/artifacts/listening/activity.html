@@ -225,6 +225,33 @@
                 font-size: 1.5rem;
             }
         }
+
+        .chart-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+
+        .time-scale-select {
+            background: var(--spotify-dark-gray);
+            color: var(--text-primary);
+            border: 1px solid var(--spotify-light-gray);
+            padding: 0.5rem 1rem;
+            border-radius: 500px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .time-scale-select:hover {
+            border-color: var(--spotify-green);
+        }
+
+        .time-scale-select:focus {
+            outline: none;
+            border-color: var(--spotify-green);
+        }
     </style>
 </head>
 <body>
@@ -275,7 +302,14 @@
             </div>
         </div>
 
-        <h2>Artist Listening Frequency</h2>
+        <div class="chart-header">
+            <h2>Artist Listening Frequency</h2>
+            <select id="timeScale" class="time-scale-select">
+                <option value="daily">Daily</option>
+                <option value="weekly">Weekly</option>
+                <option value="monthly">Monthly</option>
+            </select>
+        </div>
         <canvas id="artistChart"></canvas>
     </div>
 
@@ -426,19 +460,35 @@ This also can't support too much data at once, so try fewer files.`);
         }
 
         function updateArtistChart(filteredData) {
-            // Group by day and artist
+            const timeScale = document.getElementById('timeScale').value;
             const dailyArtistPlays = {};
             
             filteredData.forEach(d => {
-                const date = d.ts.split('T')[0];
-                const artist = d.master_metadata_album_artist_name;
+                let date = new Date(d.ts);
+                let bucketKey;
                 
-                if (!dailyArtistPlays[date]) {
-                    dailyArtistPlays[date] = {};
+                switch(timeScale) {
+                    case 'monthly':
+                        bucketKey = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}`;
+                        break;
+                    case 'weekly':
+                        // Get Monday of the week
+                        const day = date.getDay();
+                        const diff = date.getDate() - day + (day === 0 ? -6 : 1);
+                        const monday = new Date(date.setDate(diff));
+                        bucketKey = monday.toISOString().split('T')[0];
+                        break;
+                    default: // daily
+                        bucketKey = d.ts.split('T')[0];
                 }
                 
+                if (!dailyArtistPlays[bucketKey]) {
+                    dailyArtistPlays[bucketKey] = {};
+                }
+                
+                const artist = d.master_metadata_album_artist_name;
                 if (artist && d.ms_played > 30000) {
-                    dailyArtistPlays[date][artist] = (dailyArtistPlays[date][artist] || 0) + 1;
+                    dailyArtistPlays[bucketKey][artist] = (dailyArtistPlays[bucketKey][artist] || 0) + 1;
                 }
             });
 
@@ -506,6 +556,12 @@ This also can't support too much data at once, so try fewer files.`);
                 }
             });
         }
+
+        // Add event listener for the time scale dropdown
+        document.getElementById('timeScale').addEventListener('change', function() {
+            const [start, end] = slider.get().map(v => new Date(parseInt(v)));
+            updateVisualization(start, end);
+        });
     </script>
 </body>
 </html>

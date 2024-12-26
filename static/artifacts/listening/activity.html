@@ -311,12 +311,23 @@
             </select>
         </div>
         <canvas id="artistChart"></canvas>
+
+        <div class="chart-header">
+            <h2>Track Plays</h2>
+            <select id="histogramScale" class="time-scale-select">
+                <option value="daily">Daily</option>
+                <option value="weekly">Weekly</option>
+                <option value="monthly">Monthly</option>
+            </select>
+        </div>
+        <canvas id="histogramChart"></canvas>
     </div>
 
     <script>
         let listeningData = [];
         let chart = null;
         let slider = null;
+        let histogramChart = null;
 
         document.getElementById('fileInput').addEventListener('change', async function(e) {
             const files = Array.from(e.target.files);
@@ -446,6 +457,9 @@ This also can't support too much data at once, so try fewer files.`);
 
             // Update artist frequency chart
             updateArtistChart(filteredData);
+
+            // Update histogram
+            updateHistogram(filteredData);
         }
 
         function updateTopList(elementId, counts) {
@@ -557,8 +571,93 @@ This also can't support too much data at once, so try fewer files.`);
             });
         }
 
+        function updateHistogram(filteredData) {
+            const timeScale = document.getElementById('histogramScale').value;
+            const trackCounts = {};
+            
+            filteredData.forEach(d => {
+                let date = new Date(d.ts);
+                let bucketKey;
+                
+                switch(timeScale) {
+                    case 'monthly':
+                        bucketKey = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}`;
+                        break;
+                    case 'weekly':
+                        const day = date.getDay();
+                        const diff = date.getDate() - day + (day === 0 ? -6 : 1);
+                        const monday = new Date(date.setDate(diff));
+                        bucketKey = monday.toISOString().split('T')[0];
+                        break;
+                    default: // daily
+                        bucketKey = d.ts.split('T')[0];
+                }
+                
+                // Only count tracks played for more than 30 seconds
+                if (d.ms_played > 30000) {
+                    trackCounts[bucketKey] = (trackCounts[bucketKey] || 0) + 1;
+                }
+            });
+
+            const labels = Object.keys(trackCounts).sort();
+            const data = labels.map(key => trackCounts[key]);
+
+            const ctx = document.getElementById('histogramChart').getContext('2d');
+            
+            if (histogramChart) {
+                histogramChart.destroy();
+            }
+
+            histogramChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Tracks Played',
+                        data: data,
+                        backgroundColor: '#1DB954',
+                        borderColor: '#191414',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Number of Tracks'
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Date'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        title: {
+                            display: true,
+                            text: 'Track Play Distribution'
+                        }
+                    }
+                }
+            });
+        }
+
         // Add event listener for the time scale dropdown
         document.getElementById('timeScale').addEventListener('change', function() {
+            const [start, end] = slider.get().map(v => new Date(parseInt(v)));
+            updateVisualization(start, end);
+        });
+
+        // Add event listener for the histogram scale dropdown
+        document.getElementById('histogramScale').addEventListener('change', function() {
             const [start, end] = slider.get().map(v => new Date(parseInt(v)));
             updateVisualization(start, end);
         });

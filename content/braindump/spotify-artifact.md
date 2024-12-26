@@ -10,7 +10,7 @@ tags = [
 
 My friend told me that you can [request a download](https://www.spotify.com/us/account/privacy/) of all your listening activity from Spotify! I got Claude to one-shot creating an artifact to do this. You can view it [right here](/artifacts/listening/base-activity.html)! I've also got my own <a href=/artifacts/listening/my-spotify-data.json download>listening data</a> you can use while you wait for your data to come back.
 
-I juiced this base artifact up a little using [Cursor](https://www.cursor.com/) chat, and now it looks much better! [View it here](/artifacts/listening/activity.html).
+I juiced this base artifact up a little using [Cursor](https://www.cursor.com/) chat, and now it looks much better! **[View it here](/artifacts/listening/activity.html)**.
 
 ![screenshot of visualizer](/artifacts/listening/screenshot.png)
 

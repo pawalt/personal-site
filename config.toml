@@ -36,13 +36,12 @@ pygmentsCodefences = true
   # Metadata mostly used in document's head
   description = "Homepage and blog by Peyton Walters"
   keywords = "homepage, blog, networking, linux, programming"
-  images = [""]
+  images = ["/twitter-logo.png"]
 
   # Directory name of your blog content (default is `content/posts`)
   contentTypeName = "posts"
   # Default theme "light" or "dark"
   defaultTheme = "light"
-
 
   [[params.social]]
     name = "email"

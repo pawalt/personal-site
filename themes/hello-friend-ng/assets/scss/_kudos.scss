@@ -1,0 +1,76 @@
+$ringSize: 5.5ch;
+$ringWidth: 0.3ch;
+$dotSize: 1ch;
+$filledSize: $ringSize - (2 * $ringWidth);
+$finishedSize: $filledSize - (2 * $ringWidth);
+$dotMargin: (
+  $filledSize - $dotSize) / 2;
+
+.kudosContainer {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+#kudosText {
+  margin-left: 1ch;
+}
+
+.kudosCircle {
+  border-radius: 100%;
+}
+
+.kudosCircle.empty {
+  width: $dotSize;
+  height: $dotSize;
+  margin: $dotMargin;
+  background-color: red;
+  transition: 1s;
+}
+
+.kudosCircle.empty:hover {
+  margin: 0rem;
+  height: $filledSize;
+  width: $filledSize;
+  transition: 1s;
+}
+
+.kudosCircle.filled {
+  width: $finishedSize;
+  height: $finishedSize;
+  margin: $ringWidth;
+  background-color: seagreen;
+  transition: 0.2s;
+}
+
+.kudosRing {
+  width: $ringSize;
+  height: $ringSize;
+  border-width: $ringWidth;
+  border-style: solid;
+  border-radius: 100%;
+}
+
+.kudosRing.empty {
+  border-color: red;
+}
+
+.kudosRing.filled {
+  border-color: seagreen;
+}
+
+// CODE BLOCK STUFF
+
+.highlight-wrapper {
+  position: relative;
+  max-height: 600px;
+  overflow: auto;
+}
+
+.highlight-link {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+}

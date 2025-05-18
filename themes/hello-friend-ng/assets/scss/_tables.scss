@@ -1,0 +1,40 @@
+table {
+    border-collapse: collapse;
+    width: 100%;
+    /* Make table full width */
+}
+
+th {
+    border-top: none;
+    /* No top border for headers */
+    border-left: none;
+    /* No left vertical border */
+    border-right: none;
+    /* No right vertical border */
+    border-bottom: 2px solid black;
+    /* Firmer bottom border for header */
+    padding: 8px;
+    text-align: left;
+    /* Align header text to the left */
+}
+
+td {
+    /* border-top: none; -- Covered by tbody tr:first-child td below */
+    border-left: none;
+    /* No left vertical border */
+    border-right: none;
+    /* No right vertical border */
+    border-bottom: 1px solid #ccc;
+    /* Horizontal line for row separation */
+    padding: 8px;
+}
+
+/* Ensure TH's bottom border is dominant and first data row has no top border */
+tbody tr:first-child td {
+    border-top: none;
+}
+
+/* Remove the bottom border from the very last row of the table body */
+tbody tr:last-child td {
+    border-bottom: none;
+}

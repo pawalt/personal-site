@@ -11,7 +11,7 @@ I normally cook by feel, but that doesn't work with an Instant Pot. This is a wo
 |------|-------------|---------------------|
 | Chickpeas (unsoaked) | 50 min | 10 min |
 | Chickpeas (soaked) | 5 min | 10 min |
-| Black beans (unsoaked) | 50 min | 20 min |
+| Black beans (unsoaked) | 30 min | 20 min |
 | Carnitas (2 inch cubes) | 40 min | 15 min |
 | Jasmine white rice | 3 min | 10 min |
 

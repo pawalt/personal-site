@@ -17,7 +17,7 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.1/js/lightbox.min.js"></script>
 
-        <a href="/img/recipes/{{ . }}"  data-lightbox="x">
+        <a href="/img/recipes/{{ . }}" data-lightbox="x">
             <img src="/img/recipes/{{ . }}" class="post-cover" style="height: 400px; object-fit: cover;" />
         </a>
         {{ end }}
@@ -28,16 +28,18 @@
             {{ .Content }}
         </div>
 
-        <br style="clear:both"/>
+        <br style="clear:both" />
 
     </article>
 
+    <!-- Kudos is currently broken
     <div class="kudosContainer">
         <div id="kudosRing" class="kudosRing empty">
             <div id="kudosCircle" class="kudosCircle empty"></div>
         </div>
         <h3 id="kudosText"> 0 kudos</h3>
     </div>
+    -->
 
     <hr />
 
@@ -52,7 +54,7 @@
                 <line x1="7" y1="7" x2="7" y2="7"></line>
             </svg>
             {{- range . -}}
-            <span class="tag"><a href="{{ "ingredients/" | absLangURL }}{{ . | urlize }}">{{.}}</a></span>
+            <span class="tag"><a href="{{ " ingredients/" | absLangURL }}{{ . | urlize }}">{{.}}</a></span>
             {{- end }}
         </p>
         {{- end }}
@@ -64,7 +66,8 @@
                 <line x1="16" y1="2" x2="16" y2="6"></line>
                 <line x1="8" y1="2" x2="8" y2="6"></line>
                 <line x1="3" y1="10" x2="21" y2="10"></line>
-            </svg>{{ if .Site.Params.dateformNumTime }}{{ dateFormat .Site.Params.dateformNumTime .Date.Local }}{{ else }}{{ dateFormat "2006-01-02 15:04 -0700" .Date.Local }}{{ end }}
+            </svg>{{ if .Site.Params.dateformNumTime }}{{ dateFormat .Site.Params.dateformNumTime .Date.Local }}{{ else
+            }}{{ dateFormat "2006-01-02 15:04 -0700" .Date.Local }}{{ end }}
         </p>
 
         {{- if .GitInfo }}
@@ -74,9 +77,10 @@
                 <circle cx="12" cy="12" r="4"></circle>
                 <line x1="1.05" y1="12" x2="7" y2="12"></line>
                 <line x1="17.01" y1="12" x2="22.96" y2="12"></line>
-            </svg><a href="{{ .Site.Params.gitUrl -}}{{ .GitInfo.Hash }}" target="_blank"
-                rel="noopener">{{ .GitInfo.AbbreviatedHash }}</a> @
-            {{ if .Site.Params.dateformNum }}{{ dateFormat .Site.Params.dateformNum .GitInfo.AuthorDate.Local }}{{ else }}{{ dateFormat "2006-01-02" .GitInfo.AuthorDate.Local }}{{ end }}
+            </svg><a href="{{ .Site.Params.gitUrl -}}{{ .GitInfo.Hash }}" target="_blank" rel="noopener">{{
+                .GitInfo.AbbreviatedHash }}</a> @
+            {{ if .Site.Params.dateformNum }}{{ dateFormat .Site.Params.dateformNum .GitInfo.AuthorDate.Local }}{{ else
+            }}{{ dateFormat "2006-01-02" .GitInfo.AuthorDate.Local }}{{ end }}
         </p>
         {{- end }}
     </div>

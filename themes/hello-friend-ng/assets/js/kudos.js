@@ -1,7 +1,7 @@
 $(() => {
-  if (window.location.pathname.startsWith("/posts") || window.location.pathname.startsWith("/recipes")) {
-    startKudos();
-  }
+  // if (window.location.pathname.startsWith("/posts") || window.location.pathname.startsWith("/recipes")) {
+  //   startKudos();
+  // }
 })
 
 function uuidv4() {

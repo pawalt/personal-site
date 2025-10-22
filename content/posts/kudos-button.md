@@ -9,6 +9,8 @@ tags = [
 ]
 +++
 
+> **NOTE:** FaunaDB the company died, so this approach no longer is in use. I work for [Modal](https://modal.com) now, so I [re-implemented the backend](https://github.com/pawalt/personal-site/blob/806e2c70a086b39ba3609713b2159c2cd150fd40/modal_kudos.py) using Modal. Sadly I lost all my data, so please give me kudos if you like the articles!
+
 When diving into WebRTC recently, I ran into [this great article](http://blog.alexfreska.com/webrtc-not-quite-magic) on the limitations of WebRTC, particularly related to its unreliability in doing NAT traversal. At the end of the article, I saw that it had this neat "kudos" button that when I hovered over it, upped the kudos count for the post. It turns out that kudos are a feature of the [Svtle](https://svbtle.com/) platform.
 
 While I'm not interested in moving my site over to Svtle, I wanted that button, so I decided to make it. The button is comprised of 3 main parts:

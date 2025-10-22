@@ -1,0 +1,2 @@
+# Modal deployment dependencies
+modal>=0.63.0

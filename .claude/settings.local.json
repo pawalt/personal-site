@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(tree:*)",
+      "Bash(jj log:*)",
+      "Bash(~/bin/hugo:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

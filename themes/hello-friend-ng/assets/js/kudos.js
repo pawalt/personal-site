@@ -1,7 +1,7 @@
 $(() => {
-  // if (window.location.pathname.startsWith("/posts") || window.location.pathname.startsWith("/recipes")) {
-  //   startKudos();
-  // }
+  if (window.location.pathname.startsWith("/posts") || window.location.pathname.startsWith("/recipes")) {
+    startKudos();
+  }
 })
 
 function uuidv4() {
@@ -43,6 +43,7 @@ function startKudos() {
       setTimeout(() => {
         const now = (new Date()).getTime();
         if (lastTime != 0 && now - lastTime >= kudosInterval) {
+          // Optimistically update UI immediately
           circle.removeClass("empty");
           circle.addClass("filled");
           ring.removeClass("empty");
@@ -50,6 +51,8 @@ function startKudos() {
           circle.unbind("mouseenter");
           circle.unbind("mouseleave");
           text.text((initResp.numClicked + 1) + " kudos")
+
+          // Send request in background (async, non-blocking)
           addKudos(uuid, postName);
         }
       }, kudosInterval);
@@ -66,21 +69,25 @@ function startKudos() {
 }
 
 function addKudos(uuid, postName) {
-  const response = $.ajax({
-    url: "/.netlify/functions/add-kudos",
+  // Fire-and-forget async request (doesn't block UI)
+  $.ajax({
+    url: "https://pawalt--kudos-api-web.modal.run/add-kudos",
     method: "GET",
     data: {
       post: postName,
       user: uuid
     },
     mimeType: 'application/json; charset=utf-8',
-    async: false
+    async: true  // Non-blocking request
+  }).fail(function(xhr, status, error) {
+    // Silently fail - user already sees the update
+    console.log('Kudos request failed:', error);
   });
 }
 
 function kudosCheck(uuid, postName) {
   const response = $.ajax({
-    url: "/.netlify/functions/get-kudos",
+    url: "https://pawalt--kudos-api-web.modal.run/get-kudos",
     method: "GET",
     data: {
       post: postName,

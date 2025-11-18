@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title> Reproducibility: Docker Compose | CIS 1912: DevOps</title>
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="all,follow">
+  <meta name="googlebot" content="index,follow,snippet,archive">
+  <meta property="og:title" content="Reproducibility: Docker Compose" />
+<meta property="og:description" content="Lecture Three: Docker Compose Limitations of Docker as a production run system We&rsquo;ve seen how useful Docker is as a tool and the reasons that we&rsquo;d want to use it in production. But it doesn&rsquo;t solve all of our problems. Take this docker run invocation, for example:
+$ docker run -it \ --name=letsencrypt \ --cap-add=NET_ADMIN \ -e PUID=1000 \ -e PGID=1000 -e TZ=Europe/London \ -e URL=walthome.duckdns.org \ -e SUBDOMAINS=wildcard \ -e VALIDATION=duckdns \ -e DUCKDNSTOKEN=youwillnevergetthis \ -e EMAIL=pwpon500@gmail." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://cis1912.org/lectures/lec-03/" />
+<meta property="article:published_time" content="2020-12-01T00:00:00+00:00" />
+<meta property="article:modified_time" content="2024-09-19T00:00:00+00:00" />
+
+  <meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Reproducibility: Docker Compose"/>
+<meta name="twitter:description" content="Lecture Three: Docker Compose Limitations of Docker as a production run system We&rsquo;ve seen how useful Docker is as a tool and the reasons that we&rsquo;d want to use it in production. But it doesn&rsquo;t solve all of our problems. Take this docker run invocation, for example:
+$ docker run -it \ --name=letsencrypt \ --cap-add=NET_ADMIN \ -e PUID=1000 \ -e PGID=1000 -e TZ=Europe/London \ -e URL=walthome.duckdns.org \ -e SUBDOMAINS=wildcard \ -e VALIDATION=duckdns \ -e DUCKDNSTOKEN=youwillnevergetthis \ -e EMAIL=pwpon500@gmail."/>
+
+  
+  
+    
+  
+  
+  <link rel="stylesheet" href="https://cis1912.org/css/style-white.css">
+  
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  
+
+  <link rel="icon" type="image/png" href="https://cis1912.org/img/favicon.ico" />
+  
+  
+  
+    
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+	ga('create', 'false', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+
+  
+  
+</head>
+
+
+<body>
+  
+
+  <div class="max-width mx-auto px3 ltr">
+  <div class="content index py4">
+    <header id="header">
+  <a href="https://cis1912.org/">
+  
+    <div id="logo" style="background-image: url(https://cis1912.org/img/logo.png)"></div>
+  
+  <div id="title">
+    <h1>CIS 1912: DevOps</h1>
+  </div>
+  </a>
+  <div id="nav">
+    <ul>
+      <li class="icon">
+        <a href="#"><i class="fas fa-bars fa-2x"></i></a>
+      </li>
+      
+        <li><a href="/">Home</a></li>
+      
+        <li><a href="/lectures/">Schedule</a></li>
+      
+        <li><a href="/resources/">Resources</a></li>
+      
+        <li><a href="/syllabus/">Syllabus</a></li>
+      
+        <li><a href="/staff/">Staff</a></li>
+      
+        <li><a href="https://www.gradescope.com/courses/844801">Gradescope</a></li>
+      
+        <li><a href="https://edstem.org/us/courses/65023/discussion/">Ed</a></li>
+      
+    </ul>
+  </div>
+</header>
+
+
+
+    <style>
+      .main-content {
+        font-family: BlinkMacSystemFont,-apple-system,Segoe UI,Roboto,Oxygen,Ubuntu,Cantarell,Fira Sans,Droid Sans,Helvetica Neue,Helvetica,Arial,sans-serif;
+      }
+      #header #logo {
+        filter: none;
+        -webkit-filter: none;
+        background-size: contain;
+        border-radius: 0;
+      }
+    
+    </style>
+    <div class="main-content">
+    
+<article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <div class="content" itemprop="articleBody">
+  
+    <h1 id="lecture-three-docker-compose">Lecture Three: Docker Compose</h1>
+<h2 id="limitations-of-docker-as-a-production-run-system">Limitations of Docker as a production run system</h2>
+<p>We&rsquo;ve seen how useful Docker is as a tool and the reasons that we&rsquo;d want to use it in production. But it doesn&rsquo;t solve all of our problems. Take this <code>docker run</code> invocation, for example:</p>
+<pre><code>$ docker run -it \
+  --name=letsencrypt \
+  --cap-add=NET_ADMIN \
+  -e PUID=1000 \
+  -e PGID=1000 -e TZ=Europe/London \
+  -e URL=walthome.duckdns.org \
+  -e SUBDOMAINS=wildcard \
+  -e VALIDATION=duckdns \
+  -e DUCKDNSTOKEN=youwillnevergetthis \
+  -e EMAIL=pwpon500@gmail.com \
+  -v ./test:/config \
+  --restart unless-stopped \
+  linuxserver/letsencrypt
+</code></pre><p>Maybe this is easy for the computer to read, but for humans there are numerous drawbacks to writing long console commands like this. For one, they&rsquo;re inaccessible and confusing to people who have less experience with the Docker CLI. Second, how are we going to keep track of this? Perhaps we could throw it in a shell script and commit it to our repository, but shell scripts can be cumbersome to edit and do not always interface well with other programming languages.</p>
+<h2 id="run-system-wishlist">Run System Wishlist</h2>
+<p>So, if we&rsquo;re unhappy with the Docker CLI as our interface for running containers, let&rsquo;s think about what we want out of a run system:</p>
+<ul>
+<li>Reproducible (should be easy to share)</li>
+<li>Easy to understand what&rsquo;s going on (human readable)</li>
+<li>Confidence in making changes to config</li>
+<li>Resource lifecycle management (spinning up, tearing down and cleaning up containers)</li>
+</ul>
+<p>If we look at the example from the previous section, we can see that apart from resource lifecycle management, we have nothing else from our wishlist.</p>
+<h2 id="docker-compose">Docker Compose</h2>
+<p>The improvement here is Docker Compose. This is a tool that allows us to &ldquo;compose&rdquo; multiple Docker containers together. Docker Compose manages the lifecycle of multiple containers at the same time, handles all runtime settings for us (environment variables, port maps, volumes, etc), and can be started, stopped and inspected with simple shell commands. Now, if we look back at our wishlist, we meet all of the criteria.</p>
+<h2 id="yaml-yaml-aint-markup-language">YAML (YAML Ain&rsquo;t Markup Language)</h2>
+<p>What does Docker Compose actually look like? The configuration is written in a language called YAML. This is great for a lot of reasons: YAML is a simple and human-readable config language, it is standard across many infrastructure tools like Kubernetes and Continuous Integration, and it has types which will prevent us from making some major mistakes. The grammar of YAML is made up of these base types:</p>
+<ul>
+<li>Scalar
+<ul>
+<li>String</li>
+<li>Number</li>
+<li>Boolean</li>
+</ul>
+</li>
+<li>Dictionary</li>
+<li>List</li>
+</ul>
+<p>The top-level structure in configuration files is normally a dictionary, a list of key/value pairs. If you&rsquo;re familiar with JSON, then this should seem familiar. While there are only a few types, by composing these data types we can be quite expressive.</p>
+<h3 id="scalars">Scalars</h3>
+<h4 id="strings">Strings</h4>
+<p>For strings we don&rsquo;t need quotes, however it is generally considered best practice to quote your strings. If you include numbers in your strings and don&rsquo;t quote them, the compiler interprets it as a number, so it&rsquo;s always safer to add quotes.</p>
+<div class="highlight"><pre style="color:#272822;background-color:#fafafa;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#00a8c8">armaan</span><span style="color:#111">:</span> <span style="color:#d88200">&#34;Tobaccowalla&#34;</span>
+<span style="color:#00a8c8">peyton</span><span style="color:#111">:</span> Walters
+</code></pre></div><h4 id="multi-line-strings">Multi-line Strings</h4>
+<p>There are two operators, <code>|</code> (pronounced pipe) and <code>&gt;</code> (pronounced fold). The pipe preserves newlines and whitespace in the YAML, whereas the fold operator folds all newlines, tabs and other whitespace into a single space, putting everything on the same line. You can check out <a href="https://yaml-multiline.info">this page</a> for more information on the nuances of multiline strings in YAML.</p>
+<div class="highlight"><pre style="color:#272822;background-color:#fafafa;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#00a8c8">campbell</span><span style="color:#111">:</span> <span style="color:#d88200">|
+</span><span style="color:#d88200">  This is Campbell&#39;s first sentence.</span>
+  This second sentence is on a new line.
+<span style="color:#00a8c8">davis</span><span style="color:#111">:</span> <span style="color:#d88200">&gt;
+</span><span style="color:#d88200">  This is Davis&#39;s first sentence.</span>
+  This second sentence will end up
+  being on the same line as the first.
+</code></pre></div><h4 id="numbers">Numbers</h4>
+<p>Fairly straightforward, no quotes and you get a number.</p>
+<div class="highlight"><pre style="color:#272822;background-color:#fafafa;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#00a8c8">armaan</span><span style="color:#111">:</span> <span style="color:#ae81ff">21</span>
+<span style="color:#00a8c8">campbell</span><span style="color:#111">:</span> <span style="color:#ae81ff">20.5</span>
+</code></pre></div><h4 id="booleans">Booleans</h4>
+<p>YAML let&rsquo;s you get away with a lot for boolean values. You should always use <code>true</code> or <code>false</code>. However, YAML does accept <code>False</code> and <code>NO</code> but this can make your config confusing and hard to read. Also, these are subject to change in the future so using anything other than <code>true</code> or <code>false</code> is not particularly maintainable.</p>
+<div class="highlight"><pre style="color:#272822;background-color:#fafafa;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#00a8c8">this_is_true</span><span style="color:#111">:</span> <span style="color:#00a8c8">true</span>
+<span style="color:#00a8c8">this_is_false</span><span style="color:#111">:</span> <span style="color:#00a8c8">false</span>
+<span style="color:#00a8c8">do_not_do_this</span><span style="color:#111">:</span> False
+<span style="color:#00a8c8">nor_this</span><span style="color:#111">:</span> NO
+</code></pre></div><h3 id="lists">Lists</h3>
+<p>We can create a list with newlines and hyphens (you don&rsquo;t have to indent but we prefer if you do), or by comma separating the values within brackets as in <code>list2</code>. We recommend that you install a editor extension (something like <a href="https://marketplace.visualstudio.com/items?itemName=redhat.vscode-yaml">this</a>) that helps format your YAML as you write it.</p>
+<div class="highlight"><pre style="color:#272822;background-color:#fafafa;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#00a8c8">instructors</span><span style="color:#111">:</span>
+  - armaan
+  - peyton
+<span style="color:#75715e"># don&#39;t have to indent for lists</span>
+<span style="color:#75715e"># (but we prefer you do)</span>
+<span style="color:#00a8c8">tas</span><span style="color:#111">:</span>
+- davis
+- campbell
+
+<span style="color:#00a8c8">list2</span><span style="color:#111">:</span> <span style="color:#111">[</span><span style="color:#d88200">&#34;this&#34;</span><span style="color:#111">,</span> <span style="color:#d88200">&#34;is&#34;</span><span style="color:#111">,</span> <span style="color:#d88200">&#34;an&#34;</span><span style="color:#111">,</span> <span style="color:#d88200">&#34;alternative&#34;</span><span style="color:#111">]</span>
+</code></pre></div><h3 id="dictionaries">Dictionaries</h3>
+<p>Use two spaces in the indent and YAML will associate the values as a dictionary.</p>
+<div class="highlight"><pre style="color:#272822;background-color:#fafafa;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#75715e"># 2 spaces per indent or bust</span>
+<span style="color:#00a8c8">staff_ages</span><span style="color:#111">:</span>
+  <span style="color:#00a8c8">instructors</span><span style="color:#111">:</span>
+    <span style="color:#00a8c8">armaan</span><span style="color:#111">:</span> <span style="color:#ae81ff">21</span>
+    <span style="color:#00a8c8">peyton</span><span style="color:#111">:</span> <span style="color:#ae81ff">20</span>
+  <span style="color:#00a8c8">tas</span><span style="color:#111">:</span>
+    <span style="color:#00a8c8">davis</span><span style="color:#111">:</span> <span style="color:#ae81ff">22</span>
+    <span style="color:#00a8c8">campbell</span><span style="color:#111">:</span> <span style="color:#ae81ff">20</span>
+</code></pre></div><p>The example above has a readability problem. What is the value that we are associating with the names? We see that Peyton is 21 and Davis is 22, but what does that mean? Are they 21 and 22 feet tall? The example below shows how we can use lists of dictionaries to remove that ambiguity:</p>
+<div class="highlight"><pre style="color:#272822;background-color:#fafafa;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#00a8c8">staff</span><span style="color:#111">:</span>
+  <span style="color:#00a8c8">instructors</span><span style="color:#111">:</span>
+    - <span style="color:#00a8c8">name</span><span style="color:#111">:</span> armaan
+      <span style="color:#00a8c8">age</span><span style="color:#111">:</span> <span style="color:#ae81ff">21</span>
+    - <span style="color:#00a8c8">name</span><span style="color:#111">:</span> peyton
+      <span style="color:#00a8c8">age</span><span style="color:#111">:</span> <span style="color:#ae81ff">20</span>
+  <span style="color:#00a8c8">tas</span><span style="color:#111">:</span>
+    - <span style="color:#00a8c8">name</span><span style="color:#111">:</span> davis
+      <span style="color:#00a8c8">age</span><span style="color:#111">:</span> <span style="color:#ae81ff">22</span>
+    - <span style="color:#00a8c8">name</span><span style="color:#111">:</span> campbell
+      <span style="color:#00a8c8">age</span><span style="color:#111">:</span> <span style="color:#ae81ff">20</span>
+</code></pre></div><h2 id="yaml-lint">YAML Lint</h2>
+<p>Check out <a href="http://www.yamllint.com/">yamllint.com/</a> to double check your YAML, it will help remove ambiguity from the config. We automatically run this in the autograder so definitely put your Docker compose YAML in here before you submit!</p>
+<h2 id="docker-compose-to-production">Docker Compose to Production?</h2>
+<p>So far, with all of these Docker tools (Docker images, Docker containers, Docker runtime, Docker compose, and Docker Hub) we can build and distribute images, and coordinate multiple containers together. If we&rsquo;re designing a production system that we want to serve actual web traffic, is this enough? Are we missing anything? The answer is yes! Here are four main pillars that are not handled at all by Docker Compose:</p>
+<ul>
+<li>High Availability: If a node fails, will we still be able to serve traffic? High Availability can be achieved with a <a href="https://www.jscape.com/blog/active-active-vs-active-passive-high-availability-cluster">failover</a> mechanism.</li>
+<li>Horizontal Scalability: There are two ways to scale a service. Vertical scalability is when we increase the resources of our production server to handle more traffic, generally by adding more RAM or upgrading to a faster processor. Horizontal scalability is when we increase our computational resources by having multiple machines run our server code and balance load between them. Docker Compose only lets us scale vertically, because it runs on a single host. We&rsquo;re therefore limited by the capacity of a single node running Docker Compose. While vertical scaling can get us far, there&rsquo;s an upper limit to the traffic that can be handled on a single machine.</li>
+<li>Networking: Docker compose allows us to network between containers on a single machine, but we cannot communicate across multiple machines. If we want scalability and availability, we&rsquo;re going to need to communicate between multiple machines.</li>
+<li>Observability: How can we monitor all of our containers and their health? Are we notified if something fails? Are we getting more traffic than we can handle?</li>
+</ul>
+<h3 id="what-even-is-a-production-system">What even is a &ldquo;production system?&rdquo;</h3>
+<p>All four of these pillars mentioned above are extremely important for a company at the scale of Facebook, where tens of millions of people are using the product every second of every day. Smaller companies might have different requirements: high availability or observability might not be as much of an issue when operating only in one datacenter. There are certainly many companies which run Docker Compose in production. Whether that&rsquo;s a &ldquo;best practice&rdquo; or not is up to interpretation. A good takeaway from this class is that there&rsquo;s no silver bullet for every problem and every possible scale. There&rsquo;s always a cost/benefit tradeoff between a given feature and the operational complexity that comes with it. Docker Compose won&rsquo;t always be the right choice, but clustering systems might not be the right tradeoff either for a given problem.</p>
+<h2 id="production-system-wishlist">Production System Wishlist</h2>
+<p>Now that we&rsquo;ve looked at the hard technical requirements, let&rsquo;s look at the features we&rsquo;d like to see.</p>
+<h3 id="declarative">Declarative</h3>
+<blockquote>
+<p>&ldquo;I want 10 instances of my webserver at the domain example.cis1912.com&rdquo;</p>
+</blockquote>
+<p>Rather than have to micro-manage the state of our cluster at all times, we want a declarative system that will automatically reconcile the current state of our system with our desired state. This abstracts a lot of the complexity away from us. We don&rsquo;t always care how the system gets to the desired state, we just need it to be able to get there.</p>
+<p>We also get error recovery for free out of a declarative system. If some error occurs that deviates us from our desired state, we don&rsquo;t have to troubleshoot the issue. Instead, the system automatically knows that it needs to bring us back to the desired state.</p>
+<p>Declarative tools like <a href="https://www.terraform.io">terraform</a> extend beyond deployment into other parts of infrastructure.</p>
+<h3 id="api-driven">API-Driven</h3>
+<p>All interactions with the system should be done through an API interface. We should never have to SSH into a server and manually make changes. This way, everything on the cluster can be easily described as API objects and interacted with through the API. This allows us to work with our cluster resources through a REST API similarly to how an application would allow clients to work with database rows. This also makes permissions describable using API-style: principal-verb-resource style. This is where we can setup our permissions as &ldquo;Principal <code>x</code> can perform verb <code>y</code> on resource <code>z</code>&rdquo;.</p>
+<p>What&rsquo;s wrong with shell scripts? Why is an API better? Because APIs are language agonistic, we can automate the API in a number of different languages with little overhead. This is good for a system that we want to widely applicable.</p>
+<h3 id="open-source">Open Source</h3>
+<p>This means that all of the source code should be available for auditing and improvement. So, if we encounter issues with our use case, we can contribute back and submit a fix. Additionally, the diverse set of contributors and users means that someone else will likely have a related use case.</p>
+<p>It is a myth that open source is a security vulnerability because adversaries can see the codebase and look for exploits. In actuality, open source tends to be more secure because there a lot of users and contributors all ensuring that there are no vulnerabilities. Additionally, many open source groups will have 3rd party audits on occasion to double check that there are no vulnerabilities.</p>
+<h3 id="community">Community</h3>
+<p>We want a large, welcoming community. The more user and contributors, the stronger the codebase becomes. Having users that are excited about the product and working to improve it will send the project on a positive trajectory.</p>
+<h2 id="kubernetes">Kubernetes!</h2>
+<p>The system that we&rsquo;re talking about is Kubernetes. It fulfils all of the requirements we&rsquo;ve listed above and we&rsquo;ll go into more depth next week.</p>
+<h2 id="demos">Demos</h2>
+<p>Docker&rsquo;s implementation of images and containers is wonderful because it allows us to easily package up and send application code to another machine with strong guarantees that the code will work on the target machine. However, we are still missing a crucial component.</p>
+<p>Taking our Docker images and spinning up the containers is, as far as we have seen, a fairly manual process. We have used the Docker CLI to download, build, and run containers. What happens when we have multiple containers we want to run in collaboration (maybe a frontend, backend framework)? What if there are specific parameters we want to set for certain containers (mounting a volume, joining a network, etc.)? This is where Docker compose comes into play.</p>
+<p>Docker compose allows us to automate the process of installing, building, configuring, and running our Docker containers. You could argue that this is something we could do with a shell script of the commands we would run in the CLI, but you&rsquo;ll quickly see that this is brittle and hard for developers to understand or update. Instead, Docker compose allows us to write YAML files which are readable and clearly outline the configuration of each container.</p>
+<p>So, let&rsquo;s jump right into the example. In lecture, we noted that because Docker uses a copy-on-write filesystem, when changes are made to the filesystem during Docker runtime, those changes are discarded after the container is closed. Let&rsquo;s see if we can write a Docker compose file to create a container that will mount a volume so we can save logs made during the runtime of our program.</p>
+<p>If you&rsquo;ve already cloned the website repository, you can find the code for this demo in <code>demos/docker_compose_demo</code> (if you need instructions for cloning the repository, take a look at the Docker demo from last week). Let&rsquo;s quickly look over the biggest new addition to the demo, <code>docker_compose.yml</code>. This is a relatively short file with the contents:</p>
+<pre><code>version: '3'
+services:
+  docker_compose_demo_container:
+    build: .
+    ports:
+      - &quot;8080:8080&quot;
+    volumes:
+      - type: bind
+        source: ./log
+        target: /log
+</code></pre><p>The <code>version</code> number specifies what version of Docker compose we are using. The <code>services</code> is a list of containers that we want to create, and we can also specify how to build the images that run. We build the current working directory to start the container, and expose port <code>8080</code> (normally something we added as a command line argument). The reason <code>build .</code> works in this context is because Docker compose will look for the Dockerfile in the current working directory, and use that Dockerfile to build the image. Lastly, the new thing we do here is bind a volume. We tell Docker that we want it to share the <code>./log</code> directory (which we see in our current working directory) with <code>/log</code> on the container. So, in our <code>index.js</code> when we write to <code>/log</code>, Docker will also write the same data to <code>./log</code>.</p>
+<p>Let&rsquo;s give it a try:</p>
+<pre><code># Build image and run container according to specifications in docker-compose.yml
+$ docker-compose up
+</code></pre><p>After building our image specified in the Dockerfile and creating the container to run it, if we navigate to <code>localhost:8080</code> we should see the text <code>Logged request to /log.txt!</code>. Let&rsquo;s check out the <code>index.js</code> file, we can see what&rsquo;s really happening here:</p>
+<pre><code>const server = http.createServer((req, res) =&gt; {
+  fs.appendFile('/log/log.txt', JSON.stringify(req.headers) + &quot;\n\n&quot;, (error, data) =&gt; {
+    if (error) {
+      return console.log(error);
+    }
+    console.log(data);
+  });
+  res.statusCode = 200;
+  res.setHeader('Content-Type', 'text/plain');
+  res.end('Logged request to /log.txt!');
+});
+</code></pre><p>Essentially, Node gets the request, logs the headers of the request to <code>/log/log.txt</code>, and then displays <code>Logged request to /log.txt!</code>. So, if Node is writing to <code>/log/log.txt</code> and we bound that directory to <code>./log</code> that means that the logs are also stored in <code>./log/log.txt</code>! Open up <code>./log/log.txt</code> and check out the contents, you will see that the logs the headers of the requests that you make to <code>localhost:8080</code>. More than that, it updates live. So, if you close the file, make a request, and reopen the file, you will see that new log in the file.</p>
+<p>Note that Docker has a much easier time with this than a virtual machine would. When you share a volume between the host and a virtual machine, you have two separate kernels which both have to recognize it as a shared volume. Docker has an easier time because it&rsquo;s the same kernel on both processes, it just needs to expose the correct volume to the kernel.</p>
+<p>Feel free to play around with logging and other ways to interact with a shared volume. You can also change the configurations to share different volumes. You can also experiment with running two separate containers with a single Docker compose file, this is really when Docker compose starts to be a huge improvement over managing each container individually. This is something you&rsquo;ll get a lot of good experience with during homework two.</p>
+
+  
+  </div>
+</article>
+
+    </div>
+    <footer id="footer">
+  <div class="footer-left">
+    Copyright  &copy; 2025  CIS 1912: DevOps 
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+         
+        <li><a href="/">Home</a></li>
+         
+        <li><a href="/lectures/">Schedule</a></li>
+         
+        <li><a href="/resources/">Resources</a></li>
+         
+        <li><a href="/syllabus/">Syllabus</a></li>
+         
+        <li><a href="/staff/">Staff</a></li>
+         
+        <li><a href="https://www.gradescope.com/courses/844801">Gradescope</a></li>
+         
+        <li><a href="https://edstem.org/us/courses/65023/discussion/">Ed</a></li>
+        
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+  </div>
+  
+</body>
+
+<link rel="stylesheet" href=/lib/font-awesome/css/all.min.css>
+<script src=/lib/jquery/jquery.min.js></script>
+<script src=/js/main.js></script>
+</html>

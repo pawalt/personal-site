@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title> Docker Containers | CIS 1912: DevOps</title>
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="all,follow">
+  <meta name="googlebot" content="index,follow,snippet,archive">
+  <meta property="og:title" content="Docker Containers" />
+<meta property="og:description" content="Lecture Two: Docker Portability Recall all of the issues that we&rsquo;ve run into trying transfer code that we developed on our local machine to a remote host in the cloud. We want to be able to take our application code and seamlessly run it on another machine. Along with Python dependencies, we needed to make sure that system resources, including Python and Poetry themselves, were also installed as expected. How can we avoid all of the dependency and versioning issues we ran into when we manually deployed to EC2?" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://cis1912.org/lectures/lec-02/" />
+<meta property="article:published_time" content="2020-12-01T00:00:00+00:00" />
+<meta property="article:modified_time" content="2024-09-12T00:00:00+00:00" />
+
+  <meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Docker Containers"/>
+<meta name="twitter:description" content="Lecture Two: Docker Portability Recall all of the issues that we&rsquo;ve run into trying transfer code that we developed on our local machine to a remote host in the cloud. We want to be able to take our application code and seamlessly run it on another machine. Along with Python dependencies, we needed to make sure that system resources, including Python and Poetry themselves, were also installed as expected. How can we avoid all of the dependency and versioning issues we ran into when we manually deployed to EC2?"/>
+
+  
+  
+    
+  
+  
+  <link rel="stylesheet" href="https://cis1912.org/css/style-white.css">
+  
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  
+
+  <link rel="icon" type="image/png" href="https://cis1912.org/img/favicon.ico" />
+  
+  
+  
+    
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+	ga('create', 'false', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+
+  
+  
+</head>
+
+
+<body>
+  
+
+  <div class="max-width mx-auto px3 ltr">
+  <div class="content index py4">
+    <header id="header">
+  <a href="https://cis1912.org/">
+  
+    <div id="logo" style="background-image: url(https://cis1912.org/img/logo.png)"></div>
+  
+  <div id="title">
+    <h1>CIS 1912: DevOps</h1>
+  </div>
+  </a>
+  <div id="nav">
+    <ul>
+      <li class="icon">
+        <a href="#"><i class="fas fa-bars fa-2x"></i></a>
+      </li>
+      
+        <li><a href="/">Home</a></li>
+      
+        <li><a href="/lectures/">Schedule</a></li>
+      
+        <li><a href="/resources/">Resources</a></li>
+      
+        <li><a href="/syllabus/">Syllabus</a></li>
+      
+        <li><a href="/staff/">Staff</a></li>
+      
+        <li><a href="https://www.gradescope.com/courses/844801">Gradescope</a></li>
+      
+        <li><a href="https://edstem.org/us/courses/65023/discussion/">Ed</a></li>
+      
+    </ul>
+  </div>
+</header>
+
+
+
+    <style>
+      .main-content {
+        font-family: BlinkMacSystemFont,-apple-system,Segoe UI,Roboto,Oxygen,Ubuntu,Cantarell,Fira Sans,Droid Sans,Helvetica Neue,Helvetica,Arial,sans-serif;
+      }
+      #header #logo {
+        filter: none;
+        -webkit-filter: none;
+        background-size: contain;
+        border-radius: 0;
+      }
+    
+    </style>
+    <div class="main-content">
+    
+<article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <div class="content" itemprop="articleBody">
+  
+    <h1 id="lecture-two-docker">Lecture Two: Docker</h1>
+<h2 id="portability">Portability</h2>
+<p>Recall all of the issues that we&rsquo;ve run into trying transfer code that we developed on our local machine to a remote host in the cloud. We want to be able to take our application code and seamlessly run it on another machine. Along with Python dependencies, we needed to make sure that system resources, including Python and Poetry themselves, were also installed as expected. How can we avoid all of the dependency and versioning issues we ran into when we manually deployed to EC2? These are the problems that we are addressing when we talk about portability.</p>
+<p>We were able to use Poetry and get all of the <em>reproducibility</em> benefits when we deployed to EC2, but just because a build is reproducible does <em>not</em> mean that it&rsquo;s <strong>portable</strong>.</p>
+<p>The intuition here is that we essentially want to <em>send a copy of our local computer</em> to whoever is going to be running our code. We want the other person to receive a machine that has all of the dependencies needed to run our code already pre-installed.</p>
+<h2 id="containers">Containers</h2>
+<p>Containers allow us to package minimal operating systems as &ldquo;images&rdquo; which includes everything our program needs to run. Once we&rsquo;ve created the image, we can send the build instructions to anyone, and they will be able to build it on their machine to run our code. If you&rsquo;ve used Virtual Machines in previous classes, you can think of container images as analogous to VM images, but with much less overhead.</p>
+<p>Ideally, the build process itself should also be reproducible.</p>
+<h2 id="docker">Docker</h2>
+<p>Docker is the industry-standard implementation for containers. While there are other container implementations, Docker has become something like the &ldquo;Kindle&rdquo; or &ldquo;Kleenex&rdquo; of container implementations, but there <a href="https://coreos.com/rkt/">are</a> <a href="https://katacontainers.io">other</a> <a href="https://firecracker-microvm.github.io">implementations</a> which have emerged recently and look to be giving Docker a run for its money.</p>
+<p>The Open Container Initiative (OCI) image format is a general specification for how to build container images originally based on the Docker image format. But other tools built against the OCI specification build or run compatible containers, without running any code built by the Docker team. Implementations like <a href="https://podman.io">podman</a> and <a href="https://containerd.io">containerd</a> are compatible with the OCI specification while improving on some ambiguities in the original Docker implementation. Kubernetes has actually <a href="https://kubernetes.io/blog/2020/12/02/dont-panic-kubernetes-and-docker/">moved away from the Docker implementation</a> recently. We&rsquo;ll use &ldquo;OCI container&rdquo;, &ldquo;container&rdquo;, and &ldquo;Docker container&rdquo; interchangeably throughout these notes.</p>
+<h2 id="virtual-machines-vs-containers">Virtual Machines vs. Containers</h2>
+<p>For each virtual machine, the hypervisor fully emulates every piece of hardware that exists on the machine. Every virtual machine does this emulation individually, so if we have many virtual machines they don&rsquo;t share the majority of their resources. VMs each run their own kernel to talk to the emulated hardware.</p>
+<p><img src="/img/lec02/vm_vis.png" alt="Virtual Machine Diagram"></p>
+<p>Instead, containers share resources between multiple containers and with the host OS (while still maintaining privacy and separation). This gives us a huge performance increase because emulation is always slower than actual computation. This importantly includes the host OS&rsquo;s kernel, which talks to the real hardware on the computer. This makes Docker containers much lighter weight than equivalent VMs.</p>
+<p><img src="/img/lec02/container_vis.png" alt="Container Diagram"></p>
+<h2 id="docker-images">Docker Images</h2>
+<p>Docker images ideally contain the minimal OS needed to run your application. We only want the programs that are needed to run our application and nothing more.</p>
+<p>Docker images are built in layers. When we create a Docker image, it is always extending a base image. This is achieved with a &ldquo;copy-on-write&rdquo; filesystem for each image. This means that the filesystem within the image is completely immutable during the build process. Instead of modifying a file in-place, Docker will create an additional image layer with your changes on top of the base image.</p>
+<p><img src="/img/lec02/container_vis.png" alt="Docker Layering Diagram"></p>
+<p>Copy-on-write can save us a lot of space because we only ever need one instance of a base image on a given machine. We might have ten images all running on Ubuntu, we still store only one copy of the base Ubuntu image. The ten derivative images will all create new layers on top of the shared base image.</p>
+<p>The layers also work as a cache. If we make a change to our container specification that only affects our source code, the underlying layers of the container, where we specify the OS and install dependencies like Apache <em>don&rsquo;t have to be rebuilt</em>. The container build process can simply rebuild the source code on top of the existing base image, which speeds up build time.</p>
+<p>Note that the successive images which we are layering on top only contain the differences. This saves us space initially (we only save the differences, so we don&rsquo;t store anything twice), but it also means that Docker images strictly increase in size as we continue to add layers on top. Be aware of this as you build your images: if you add something and then delete it in a later image, this still increases the size of the image because the differences are still stored.</p>
+<h2 id="container-runtime">Container Runtime</h2>
+<p>An important distinction in what we&rsquo;ve been talking about so far is what the difference is between a <strong>container</strong> and an <strong>image</strong>. An <strong>image</strong> is a blueprint for an instance of the code you want to run. A <strong>container</strong> is running instance of a Docker image. The Docker <strong>runtime</strong> is what takes an image, creates a container and runs it.</p>
+<p>A Docker container is a running instance of a Docker image. Containers still employ a copy-on-write filesystem, layered off of the image they were spawned from. This means any new, updated or removed files during the lifetime of a container are <em>not</em> persisted after a container is stopped (Side note: the picture is a bit more complex in the original Docker implementation, but clarified with most other OCI-compatible runtimes). This means if we want to save any files that are created within a container while it runs, like log files, we have to do something other than save it to the filesystem (like mounting it to a volume that is shared between the container and the host OS).</p>
+<p>Docker runtime runs with a single host-wide Docker <a href="https://en.wikipedia.org/wiki/Daemon_(computing)">daemon</a> (depicted in the earlier Docker visualization) which just sits in the background, managing your containers, and processing any requests which you might make with the Docker CLI to interact with the container. Docker&rsquo;s daemon is considered a single point of failure so some alternative runtimes were designed to manage containers without a long-running, host-wide daemon process.</p>
+<h2 id="publishing">Publishing</h2>
+<p>If we are sharing an image with someone, we don&rsquo;t want them to have to build the image from scratch every time. So, we need some way to publish a Docker image for someone else to use.</p>
+<p>The solution here is a registry where we can publish our images so that others can download them. Common examples include:</p>
+<ul>
+<li>Docker Hub</li>
+<li>Google Container Registry (GCR)</li>
+<li>Elastic Container Registry (ECR)</li>
+<li>GitHub Container Registry (unfortunately also abbreviated GCR)</li>
+</ul>
+<p>These are essentially the same thing as NPM or PIP, but for Docker images instead of code packages.</p>
+<h3 id="tags">Tags</h3>
+<p>We need some way to identify images so that they are easily available to others. Images name take the form <code>IMAGE_NAME[:tag]</code> where <code>IMAGE_NAME</code> is the name of your project or repository, and <code>tag</code> specifies the version. Examples are <code>node:latest</code> and <code>node:15-buster-slim</code>. If you don&rsquo;t specify the tag it defaults to <code>latest</code>.</p>
+<p>The idea is that we want the tag names to be distinct and predictable. Some common strategies are auto-incrementing so that the tag increases by one every time you create a new version of the image, using conventional versioning nomenclature (think <code>node 3.1.4</code> or <code>python 3.6.2</code>), or using the SHA of a Git commit so that you can associate a image with a version your code.</p>
+<h2 id="demos">Demos</h2>
+<h3 id="docker-1">Docker</h3>
+<p>As a short introduction to Docker, we&rsquo;re going to pull down a Docker image running Ubuntu and run that image in a container on our machine. To get started, first ensure that Docker Desktop is up and running on your machine. Then, we can pull the latest version of Ubuntu, a Linux distribution which will run on our container (you can read more <a href="https://hub.docker.com/_/ubuntu?tab=description&amp;page=1&amp;ordering=last_updated">here</a>):</p>
+<pre><code>$ docker pull ubuntu:latest
+latest: Pulling from library/ubuntu
+da7391352a9b: Pull complete 
+14428a6d4bcd: Pull complete 
+2c2d948710f2: Pull complete 
+Digest: sha256:c95a8e48bf88e9849f3e0f723d9f49fa12c5a00cfc6e60d2bc99d87555295e4c
+Status: Downloaded newer image for ubuntu:latest
+docker.io/library/ubuntu:latest
+</code></pre><p>It&rsquo;s important to note here that when we tell Docker to pull the latest version of Ubuntu, it actually does three separate pulls from three separate images. This is because Docker images are build inherently from layers. Each pull is for a different layer of the image, and they are built on top of each other to produce the final product.</p>
+<p>When you think about it, this is a really smart way to create Docker images. Let&rsquo;s imagine a Docker container that runs Redis, the caching server that acts as a data store. To run Redis, we first need to have a Linux distribution installed, so we can add that as a lower layer of the Docker image which Redis then builds on top of by installing the specific Redis software.</p>
+<p>So, now that we have this Ubuntu Docker image installed, what can we do with it? Let&rsquo;s spin up the container and play around with it:</p>
+<pre><code>$ docker run -it --rm --name ubuntu-demo ubuntu
+# This will open a terminal within the container running Ubuntu thanks to the &quot;-it&quot; flag
+# Now let's check to make sure we are actually running the latest version of Ubuntu
+root@260a8119abd6:/# cat /etc/os-release
+NAME=&quot;Ubuntu&quot;
+VERSION=&quot;20.04.1 LTS (Focal Fossa)&quot;
+ID=ubuntu
+ID_LIKE=debian
+PRETTY_NAME=&quot;Ubuntu 20.04.1 LTS&quot;
+VERSION_ID=&quot;20.04&quot;
+HOME_URL=&quot;https://www.ubuntu.com/&quot;
+SUPPORT_URL=&quot;https://help.ubuntu.com/&quot;
+BUG_REPORT_URL=&quot;https://bugs.launchpad.net/ubuntu/&quot;
+PRIVACY_POLICY_URL=&quot;https://www.ubuntu.com/legal/terms-and-policies/privacy-policy&quot;
+VERSION_CODENAME=focal
+UBUNTU_CODENAME=focal
+</code></pre><p>We can see that the Docker container is running a fresh install of Ubuntu. Now, we could do all manner of things with this Ubuntu container: install new software, expose ports, connect to a network, run a web server, etc. However, actually doing these things manually within the Ubuntu terminal is <em>not</em> reproducible; we would have to perform those same operations every time we wanted to spin up a new container. Hence, a Dockerfile. When we write a Dockerfile it is essentially an instruction manual for how the Docker image should be run, so that all of the installation and configuration of whatever toolchain we need on our container can be written out concisely once and only once.</p>
+<p>However, feel free to try out different commands or installing different software on the Ubuntu container. It works the same as any other Linux command line interface and there is a lot you can do with it.</p>
+<h3 id="building-an-app-on-docker">Building an App on Docker</h3>
+<p>We&rsquo;re going to provide you with some of the starter code for a Node application. We&rsquo;re going to put this application within a Docker container and see how the development process (updating the app) is influenced by the application being containerized. To get the starter code, you can clone the course website repository and enter the <code>node_demo</code> directory:</p>
+<pre><code># Clone the website from Git to your local machine
+$ git clone https://github.com/cis1912/website.git
+# Enter the node_demo directory
+$ cd website/demos/node_demo
+</code></pre><p>First, take a look at the different files in <code>node_demo</code> to get a sense of how package dependencies are being managed and how the Docker Container is configured. Within the Dockerfile there are descriptions of every command explaining their purpose, definitely read through this and as it will be helpful when you write your own Dockerfile for the homework!</p>
+<p>Before we carry on to modifying the application, there is a little nuance in the Dockerfile that we should underscore. Taking a look inside the Dockerfile, note that we copy over the <code>package.json</code> and <code>package-lock.json</code> files before installing our dependencies:</p>
+<pre><code># Copy over package.json and package-lock.json (these files
+# contain the necessary dependencies for our project)
+COPY package*.json ./
+
+# Install dependencies for our project
+RUN npm install
+</code></pre><p>Why don&rsquo;t we just install the dependencies and then copy everything over at once? The answer is that Docker is smart and if the files <code>package.json</code> and <code>package-lock.json</code> have not changed, it can skip the following build steps where it installs the dependencies and copies them over. This works because the two files <code>package.json</code> and <code>package-lock.json</code> contain all of the Node dependencies, so if they have not changed we know that the dependencies have not changed.</p>
+<p>Now, let&rsquo;s build the Docker image and start up the Docker container (make sure you&rsquo;ve entered the <code>node_demo</code> directory):</p>
+<pre><code># Build the Docker image from our Dockerfile
+$ docker build --tag node-demo-image .
+# Run the Docker container with port 8080 exposed
+$ docker run -p 8080:8080 --name node-demo-container node-demo-image
+Server running at http://0.0.0.0:8080/
+</code></pre><p>Navigate to (http://localhost:8080/)[http://localhost:8080/] and you can see the <code>Hello world!</code> message. So, let&rsquo;s make some changes to this web application and see what we need to do in our Dockerfile to support those changes (spoiler alert: not very much, Docker makes the development process pretty seamless).</p>
+<p>Let&rsquo;s say we needed to generate unique user IDs if we were saving users into a database. There&rsquo;s an Node package called <code>uuid</code>, let&rsquo;s install that and see how Docker handles adding a new package. We can type:</p>
+<pre><code>$ npm install uuid
+</code></pre><p>then, let&rsquo;s modify line 10 in our <code>index.js</code> file form</p>
+<pre><code>res.end('Hello World!');
+</code></pre><p>to be</p>
+<pre><code>res.end('Hello World: ' + uuidv4());
+</code></pre><p>and also put this import statement at the top of the file</p>
+<pre><code>const { v4: uuidv4 } = require('uuid');
+</code></pre><p>then, when we re-build our Docker container we will see this new Node package
+installed, and our index page will be modified:</p>
+<pre><code># Delete the previous node-demo container (cannot have duplicate container names)
+$ docker container rm node-demo-container
+# Rebuild the node-demo-image
+$ docker build --tag node-demo-image .
+# Recreate the node-demo container
+$ docker run -p 8080:8080 --name node-demo-container node-demo-image
+Server running at http://0.0.0.0:8080/
+</code></pre><p>Navigate back to <code>localhost:8080</code> and you will see that the page now displays something like &ldquo;Hello World: 0b431e86-49f0-4678-9b34-ff8939c1201b&rdquo;. So, the installation and setup of our <code>uuid</code> package worked!</p>
+<p>This is pretty concise. When we make a change to our development environment (here we installed a new dependency), Docker makes it pretty seamless to also apply change to the Docker container&rsquo;s environment. However, we still have some parts of the process which can be streamlined further. This is something we&rsquo;ll address later in the course when we talk about Docker-compose!</p>
+
+  
+  </div>
+</article>
+
+    </div>
+    <footer id="footer">
+  <div class="footer-left">
+    Copyright  &copy; 2025  CIS 1912: DevOps 
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+         
+        <li><a href="/">Home</a></li>
+         
+        <li><a href="/lectures/">Schedule</a></li>
+         
+        <li><a href="/resources/">Resources</a></li>
+         
+        <li><a href="/syllabus/">Syllabus</a></li>
+         
+        <li><a href="/staff/">Staff</a></li>
+         
+        <li><a href="https://www.gradescope.com/courses/844801">Gradescope</a></li>
+         
+        <li><a href="https://edstem.org/us/courses/65023/discussion/">Ed</a></li>
+        
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+  </div>
+  
+</body>
+
+<link rel="stylesheet" href=/lib/font-awesome/css/all.min.css>
+<script src=/lib/jquery/jquery.min.js></script>
+<script src=/js/main.js></script>
+</html>

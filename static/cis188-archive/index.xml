@@ -1,0 +1,271 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>CIS 188: DevOps</title>
+    <link>https://pawa.lt/cis188-archive/</link>
+    <description>Recent content on CIS 188: DevOps</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Wed, 27 Apr 2022 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="https://pawa.lt/cis188-archive/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Final Project Due</title>
+      <link>https://pawa.lt/cis188-archive/lectures/hw-final/</link>
+      <pubDate>Wed, 27 Apr 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://pawa.lt/cis188-archive/lectures/hw-final/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Final Project Presentations</title>
+      <link>https://pawa.lt/cis188-archive/lectures/lec-final-presentations/</link>
+      <pubDate>Tue, 26 Apr 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://pawa.lt/cis188-archive/lectures/lec-final-presentations/</guid>
+      <description>Coming soon!</description>
+    </item>
+    
+    <item>
+      <title>Lightning Talks</title>
+      <link>https://pawa.lt/cis188-archive/lectures/lec-special-lightning/</link>
+      <pubDate>Tue, 19 Apr 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://pawa.lt/cis188-archive/lectures/lec-special-lightning/</guid>
+      <description>Coming soon!</description>
+    </item>
+    
+    <item>
+      <title>Special Topic - Distributed Databases</title>
+      <link>https://pawa.lt/cis188-archive/lectures/lec-special-1/</link>
+      <pubDate>Tue, 12 Apr 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://pawa.lt/cis188-archive/lectures/lec-special-1/</guid>
+      <description>Enjoy Thanksgiving break!</description>
+    </item>
+    
+    <item>
+      <title>Special Topic: CDKs</title>
+      <link>https://pawa.lt/cis188-archive/lectures/lec-special-cdk/</link>
+      <pubDate>Tue, 05 Apr 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://pawa.lt/cis188-archive/lectures/lec-special-cdk/</guid>
+      <description>Coming soon!</description>
+    </item>
+    
+    <item>
+      <title>HW4: CI/CD Due</title>
+      <link>https://pawa.lt/cis188-archive/lectures/hw4/</link>
+      <pubDate>Sun, 03 Apr 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://pawa.lt/cis188-archive/lectures/hw4/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Special Topic: Homelabs</title>
+      <link>https://pawa.lt/cis188-archive/lectures/lec-special-2/</link>
+      <pubDate>Tue, 29 Mar 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://pawa.lt/cis188-archive/lectures/lec-special-2/</guid>
+      <description>Coming soon!</description>
+    </item>
+    
+    <item>
+      <title>Advanced Kubernetes</title>
+      <link>https://pawa.lt/cis188-archive/lectures/lec-kube-advanced/</link>
+      <pubDate>Tue, 22 Mar 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://pawa.lt/cis188-archive/lectures/lec-kube-advanced/</guid>
+      <description>Coming soon!</description>
+    </item>
+    
+    <item>
+      <title>HW3: Cloud Kubernetes Due</title>
+      <link>https://pawa.lt/cis188-archive/lectures/hw3/</link>
+      <pubDate>Sun, 20 Mar 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://pawa.lt/cis188-archive/lectures/hw3/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Continuous Integration / Continuous Deployment</title>
+      <link>https://pawa.lt/cis188-archive/lectures/lec-ci-cd/</link>
+      <pubDate>Tue, 15 Mar 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://pawa.lt/cis188-archive/lectures/lec-ci-cd/</guid>
+      <description>Lecture Eight: CI/CD Developer Experience Reproducibility through automation is one of the most important goals of DevOps we&amp;rsquo;ve discussed throughout the course. When it comes to deployment, though, there are quite a few steps that we need to keep in mind:
+ Make code change Test code Build Docker image Tag Docker image Push to Docker Hub Update Kubernetes manifests to new Docker image tag Apply updated manifests  Importantly, steps 3-7 are the same every time we deploy our code.</description>
+    </item>
+    
+    <item>
+      <title>No Class - Spring Break</title>
+      <link>https://pawa.lt/cis188-archive/lectures/lec-break/</link>
+      <pubDate>Tue, 08 Mar 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://pawa.lt/cis188-archive/lectures/lec-break/</guid>
+      <description>Enjoy Fall break!</description>
+    </item>
+    
+    <item>
+      <title>Monitoring and Observability</title>
+      <link>https://pawa.lt/cis188-archive/lectures/lec-monitoring/</link>
+      <pubDate>Tue, 01 Mar 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://pawa.lt/cis188-archive/lectures/lec-monitoring/</guid>
+      <description>Coming soon!</description>
+    </item>
+    
+    <item>
+      <title>The Cloud</title>
+      <link>https://pawa.lt/cis188-archive/lectures/lec-cloud/</link>
+      <pubDate>Tue, 22 Feb 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://pawa.lt/cis188-archive/lectures/lec-cloud/</guid>
+      <description>Lecture Six: Cloud Kubernetes Traditional Infrastructure Traditionally, from the beginning of the web in the 1990s up through 2009 or 2010, traditional server infrastructure was oriented around physical machines. There are three general steps in terms of complexity within this traditional structure: the &amp;ldquo;server under a desk&amp;rdquo;, colocation centers, and datacenters.
+&amp;ldquo;Server under the desk&amp;rdquo; The &amp;ldquo;server under a desk&amp;rdquo; is exactly what it sounds like. Developers can (and did) set up static IP addresses through their internet service providers (ISPs) and simply plug in a server, expose its HTTP ports to the internet, and serve traffic.</description>
+    </item>
+    
+    <item>
+      <title>HW2: Local Kubernetes Due</title>
+      <link>https://pawa.lt/cis188-archive/lectures/hw2/</link>
+      <pubDate>Sun, 20 Feb 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://pawa.lt/cis188-archive/lectures/hw2/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Practical Kubernetes</title>
+      <link>https://pawa.lt/cis188-archive/lectures/lec-kube-practical/</link>
+      <pubDate>Tue, 15 Feb 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://pawa.lt/cis188-archive/lectures/lec-kube-practical/</guid>
+      <description>Lecture Five: Practical Kubernetes We covered the conceptual foundation and some of the basic Kubernetes resources last week, and this week we&amp;rsquo;ll be diving into more concepts and resource types in Kubernetes that build on top of the foundation we built. Each resource we cover will have an associated example with requisite yaml. Please make sure to also check out the Kubernetes documentation as well! The important thing isn&amp;rsquo;t to memorize the yaml, but to understand the concepts so we can extend our understanding of what Kubernetes can do.</description>
+    </item>
+    
+    <item>
+      <title>Kubernetes fundamentals</title>
+      <link>https://pawa.lt/cis188-archive/lectures/lec-kube/</link>
+      <pubDate>Tue, 08 Feb 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://pawa.lt/cis188-archive/lectures/lec-kube/</guid>
+      <description>Lecture Four: Kubernetes What is Kubernetes? At the most basic level, Kubernetes is a tool for orchestrating containers. In most scenarios these are Docker containers, but we can actually use Kubernetes to orchestrate any container that complies to the API specification (even VMs!). This tool will take us from running containers locally to running containers in production.
+Pods A pod in Kubernetes is the most basic unit of work. They are tight couplings of containers: this means they are containers running on the same machine (node) sharing the same network (though they do not share the same filesystem).</description>
+    </item>
+    
+    <item>
+      <title>HW1: Docker Due</title>
+      <link>https://pawa.lt/cis188-archive/lectures/hw1/</link>
+      <pubDate>Sun, 06 Feb 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://pawa.lt/cis188-archive/lectures/hw1/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Reproducibility: Docker Compose</title>
+      <link>https://pawa.lt/cis188-archive/lectures/lec-docker-compose/</link>
+      <pubDate>Tue, 01 Feb 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://pawa.lt/cis188-archive/lectures/lec-docker-compose/</guid>
+      <description>Lecture Three: Docker Compose Limitations of Docker as a production run system We&amp;rsquo;ve seen how useful Docker is as a tool and the reasons that we&amp;rsquo;d want to use it in production. But it doesn&amp;rsquo;t solve all of our problems. Take this docker run invocation, for example:
+$ docker run -it \ --name=letsencrypt \ --cap-add=NET_ADMIN \ -e PUID=1000 \ -e PGID=1000 -e TZ=Europe/London \ -e URL=walthome.duckdns.org \ -e SUBDOMAINS=wildcard \ -e VALIDATION=duckdns \ -e DUCKDNSTOKEN=youwillnevergetthis \ -e EMAIL=pwpon500@gmail.</description>
+    </item>
+    
+    <item>
+      <title>Docker Containers</title>
+      <link>https://pawa.lt/cis188-archive/lectures/lec-docker/</link>
+      <pubDate>Tue, 25 Jan 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://pawa.lt/cis188-archive/lectures/lec-docker/</guid>
+      <description>Lecture Two: Docker Portability Recall all of the issues that we&amp;rsquo;ve run into trying transfer code that we developed on our local machine to a remote host in the cloud. We want to be able to take our application code and seamlessly run it on another machine. Along with Python dependencies, we needed to make sure that system resources, including Python and Poetry themselves, were also installed as expected. How can we avoid all of the dependency and versioning issues we ran into when we manually deployed to EC2?</description>
+    </item>
+    
+    <item>
+      <title>HW0: Web Servers Due</title>
+      <link>https://pawa.lt/cis188-archive/lectures/hw0/</link>
+      <pubDate>Sun, 23 Jan 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://pawa.lt/cis188-archive/lectures/hw0/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Course Intro, HTTP</title>
+      <link>https://pawa.lt/cis188-archive/lectures/lec-intro-http/</link>
+      <pubDate>Tue, 18 Jan 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://pawa.lt/cis188-archive/lectures/lec-intro-http/</guid>
+      <description>Lecture Zero: Introduction Housekeeping Grade breakdown:
+ 50% homework (5 assignments, 10% per homework released on GitHub and submitted on Gradescope) 40% final project 10% participation  Class is curved.
+Post questions on Piazza (not for debugging, but for conceptual questions on the homeworks or lecture clarifications) or come to OH.
+What is DevOps? Breaking down the wall between developers (people writing code) and operations (people releasing and deploying code into production and making sure it is reliable).</description>
+    </item>
+    
+    <item>
+      <title></title>
+      <link>https://pawa.lt/cis188-archive/staff/armaan/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pawa.lt/cis188-archive/staff/armaan/</guid>
+      <description>Wrangling open source maintainers</description>
+    </item>
+    
+    <item>
+      <title></title>
+      <link>https://pawa.lt/cis188-archive/staff/campbell/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pawa.lt/cis188-archive/staff/campbell/</guid>
+      <description>Prefers alternating between tabs and spaces</description>
+    </item>
+    
+    <item>
+      <title></title>
+      <link>https://pawa.lt/cis188-archive/staff/peyton/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pawa.lt/cis188-archive/staff/peyton/</guid>
+      <description>Lost in the zero trust sauce</description>
+    </item>
+    
+    <item>
+      <title></title>
+      <link>https://pawa.lt/cis188-archive/staff/rohan/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pawa.lt/cis188-archive/staff/rohan/</guid>
+      <description>&amp;ldquo;GitHub Rohan&amp;rdquo;</description>
+    </item>
+    
+    <item>
+      <title>Kube Tricks</title>
+      <link>https://pawa.lt/cis188-archive/resources/kube_tricks/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pawa.lt/cis188-archive/resources/kube_tricks/</guid>
+      <description>Quickly scaffolding manifests:
+kubectl create deployment foo \ --image=nginx:1.21 \ --dry-run=client \ -o yaml K8s YAML generator with descriptions:
+https://k8syaml.com/
+Debugging workflow:
+ kubectl get  Do I see the resources I expect? What are their states?   kubectl describe  What are the events? Does the describe line up with your manifest?   kubectl logs  Are there errors in the logs? Are your requests making it to the application?</description>
+    </item>
+    
+    <item>
+      <title>Syllabus</title>
+      <link>https://pawa.lt/cis188-archive/syllabus/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pawa.lt/cis188-archive/syllabus/</guid>
+      <description>For a list of assignments and when they are due check the course schedule.
+Meetings Course meetings will be every Tuesday from 5:15-6:45pm ET. Office hours will be held biweekly unless announced otherwise. Details can be found in our logistics Piazza post.
+Topics Covered  HTTP Containerization Docker Declarative Infrastructure Kubernetes Continuous Integration/Continuous Deployment Cloud Fundamentals Infrastructure Monitoring  Grading  50% Homework 40% Final Project 10% Participation  Homework assignments will consist of medium-size projects that lead students through the implementation and application of concepts and tools discussed in lectures, and will be graded on correctness and completeness.</description>
+    </item>
+    
+  </channel>
+</rss>

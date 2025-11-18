@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title> Course Intro | CIS 1912: DevOps</title>
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="all,follow">
+  <meta name="googlebot" content="index,follow,snippet,archive">
+  <meta property="og:title" content="Course Intro" />
+<meta property="og:description" content="Lecture Zero: Introduction Housekeeping Grade breakdown:
+ 50% homework (5 assignments, 10% per homework released on GitHub and submitted on Gradescope) 40% final project 10% participation  Class is curved.
+Post questions on Ed (not for debugging, but for conceptual questions on the homeworks or lecture clarifications) or come to OH.
+What is DevOps? Breaking down the wall between developers (people writing code) and operations (people releasing and deploying code into production and making sure it is reliable)." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://cis1912.org/lectures/lec-00/" />
+<meta property="article:published_time" content="2020-12-01T00:00:00+00:00" />
+<meta property="article:modified_time" content="2024-08-29T00:00:00+00:00" />
+
+  <meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Course Intro"/>
+<meta name="twitter:description" content="Lecture Zero: Introduction Housekeeping Grade breakdown:
+ 50% homework (5 assignments, 10% per homework released on GitHub and submitted on Gradescope) 40% final project 10% participation  Class is curved.
+Post questions on Ed (not for debugging, but for conceptual questions on the homeworks or lecture clarifications) or come to OH.
+What is DevOps? Breaking down the wall between developers (people writing code) and operations (people releasing and deploying code into production and making sure it is reliable)."/>
+
+  
+  
+    
+  
+  
+  <link rel="stylesheet" href="https://cis1912.org/css/style-white.css">
+  
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  
+
+  <link rel="icon" type="image/png" href="https://cis1912.org/img/favicon.ico" />
+  
+  
+  
+    
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+	ga('create', 'false', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+
+  
+  
+</head>
+
+
+<body>
+  
+
+  <div class="max-width mx-auto px3 ltr">
+  <div class="content index py4">
+    <header id="header">
+  <a href="https://cis1912.org/">
+  
+    <div id="logo" style="background-image: url(https://cis1912.org/img/logo.png)"></div>
+  
+  <div id="title">
+    <h1>CIS 1912: DevOps</h1>
+  </div>
+  </a>
+  <div id="nav">
+    <ul>
+      <li class="icon">
+        <a href="#"><i class="fas fa-bars fa-2x"></i></a>
+      </li>
+      
+        <li><a href="/">Home</a></li>
+      
+        <li><a href="/lectures/">Schedule</a></li>
+      
+        <li><a href="/resources/">Resources</a></li>
+      
+        <li><a href="/syllabus/">Syllabus</a></li>
+      
+        <li><a href="/staff/">Staff</a></li>
+      
+        <li><a href="https://www.gradescope.com/courses/844801">Gradescope</a></li>
+      
+        <li><a href="https://edstem.org/us/courses/65023/discussion/">Ed</a></li>
+      
+    </ul>
+  </div>
+</header>
+
+
+
+    <style>
+      .main-content {
+        font-family: BlinkMacSystemFont,-apple-system,Segoe UI,Roboto,Oxygen,Ubuntu,Cantarell,Fira Sans,Droid Sans,Helvetica Neue,Helvetica,Arial,sans-serif;
+      }
+      #header #logo {
+        filter: none;
+        -webkit-filter: none;
+        background-size: contain;
+        border-radius: 0;
+      }
+    
+    </style>
+    <div class="main-content">
+    
+<article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <div class="content" itemprop="articleBody">
+  
+    <h1 id="lecture-zero-introduction">Lecture Zero: Introduction</h1>
+<h2 id="housekeeping">Housekeeping</h2>
+<p>Grade breakdown:</p>
+<ul>
+<li>50% homework (5 assignments, 10% per homework released on GitHub and submitted on Gradescope)</li>
+<li>40% final project</li>
+<li>10% participation</li>
+</ul>
+<p>Class is curved.</p>
+<p>Post questions on Ed (not for debugging, but for conceptual questions on the homeworks or lecture clarifications) or come to OH.</p>
+<h2 id="what-is-devops">What is DevOps?</h2>
+<p>Breaking down the wall between developers (people writing code) and operations (people releasing and deploying code into production and making sure it is reliable). Traditionally these have been two very separate teams, which means that the incentives developers and operations engineers don&rsquo;t always align. Developers aren&rsquo;t motivated to make life easier for operations and operations isn&rsquo;t motivated to make life easier for developers. When a crash happens in production, the people handling the crash aren&rsquo;t the ones familiar with the code.</p>
+<p>The key concept behind DevOps is that if these two teams can share responsibilities, they can build empathy, align their incentives, and ultimately lead to a better experience for the end user if new features are more stable and reliable.</p>
+<p>There are a few main DevOps solutions we will be focusing on in CIS 1912:</p>
+<ul>
+<li>Automated testing and deployment (we can easily ship new features with testing)</li>
+<li>Easy deploy rollback (if something breaks we can revert quickly)</li>
+<li>Observability (so we can know when something is wrong)</li>
+</ul>
+<p>The main takeaway is to <strong>get developers involved in the operations process</strong> so that developers can use their skills to build tools to automate away the tedious parts of operations jobs. DevOps is not a role, but a way of doing things.</p>
+<h2 id="python">Python</h2>
+<p>We&rsquo;ll be using Python for most of the development side of the DevOps solutions we cover in this course. It&rsquo;s common and well supported in the infrastructure space because it&rsquo;s easy to learn and there is wide library support.</p>
+<h3 id="python-example">Python example</h3>
+<div class="highlight"><pre style="color:#272822;background-color:#fafafa;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e"># Comments start with a `#`</span>
+
+<span style="color:#f92672">import</span> <span style="color:#111">time</span> <span style="color:#75715e"># import a module from the standard library</span>
+
+<span style="color:#00a8c8">for</span> <span style="color:#111">i</span> <span style="color:#f92672">in</span> <span style="color:#111">range</span><span style="color:#111">(</span><span style="color:#ae81ff">1</span><span style="color:#111">,</span> <span style="color:#ae81ff">16</span><span style="color:#111">):</span> <span style="color:#75715e"># For loops only over iterators like lists and `range()`</span>
+    <span style="color:#00a8c8">print</span><span style="color:#111">(</span><span style="color:#111">i</span><span style="color:#111">)</span>
+    <span style="color:#00a8c8">if</span> <span style="color:#111">i</span> <span style="color:#f92672">%</span> <span style="color:#ae81ff">3</span> <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span> <span style="color:#f92672">and</span> <span style="color:#111">i</span> <span style="color:#f92672">%</span> <span style="color:#ae81ff">5</span> <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span><span style="color:#111">:</span>  <span style="color:#75715e"># Conditional expressions</span>
+        <span style="color:#00a8c8">print</span><span style="color:#111">(</span><span style="color:#111">time</span><span style="color:#f92672">.</span><span style="color:#111">time</span><span style="color:#111">())</span>
+        <span style="color:#00a8c8">print</span><span style="color:#111">(</span><span style="color:#d88200">&#34;fizzbuzz&#34;</span><span style="color:#111">)</span>  <span style="color:#75715e"># Strings can be double or single quoted</span>
+    <span style="color:#00a8c8">elif</span> <span style="color:#111">i</span> <span style="color:#f92672">%</span> <span style="color:#ae81ff">3</span> <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span><span style="color:#111">:</span>
+        <span style="color:#00a8c8">print</span><span style="color:#111">(</span><span style="color:#d88200">&#34;fizz&#34;</span><span style="color:#111">)</span>
+    <span style="color:#00a8c8">elif</span> <span style="color:#111">i</span> <span style="color:#f92672">%</span> <span style="color:#ae81ff">5</span> <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span><span style="color:#111">:</span>
+        <span style="color:#00a8c8">print</span><span style="color:#111">(</span><span style="color:#d88200">&#34;buzz&#34;</span><span style="color:#111">)</span>
+</code></pre></div><p>Running the above code produces the following output:</p>
+<pre><code>$ python3 test.py
+1
+2
+3
+fizz
+4
+5
+buzz
+6
+fizz
+7
+8
+9
+fizz
+10
+buzz
+11
+12
+fizz
+13
+14
+15
+1607229328.9530184
+fizzbuzz
+</code></pre><p>Code in Python can run at the top-level, but it&rsquo;s good practice to pull logic into functions:</p>
+<div class="highlight"><pre style="color:#272822;background-color:#fafafa;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#00a8c8">def</span> <span style="color:#75af00">get_buzz</span><span style="color:#111">(</span><span style="color:#111">i</span><span style="color:#111">):</span> <span style="color:#75715e"># (def)ine a function</span>
+    <span style="color:#00a8c8">if</span> <span style="color:#111">i</span> <span style="color:#f92672">%</span> <span style="color:#ae81ff">3</span> <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span> <span style="color:#f92672">and</span> <span style="color:#111">i</span> <span style="color:#f92672">%</span> <span style="color:#ae81ff">5</span> <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span><span style="color:#111">:</span>
+        <span style="color:#00a8c8">return</span> <span style="color:#d88200">&#34;fizzbuzz&#34;</span>
+    <span style="color:#00a8c8">elif</span> <span style="color:#111">i</span> <span style="color:#f92672">%</span> <span style="color:#ae81ff">3</span> <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span><span style="color:#111">:</span>
+        <span style="color:#00a8c8">return</span> <span style="color:#d88200">&#34;fizz&#34;</span>
+    <span style="color:#00a8c8">elif</span> <span style="color:#111">i</span> <span style="color:#f92672">%</span> <span style="color:#ae81ff">5</span> <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span><span style="color:#111">:</span>
+        <span style="color:#00a8c8">return</span> <span style="color:#d88200">&#34;buzz&#34;</span>
+    <span style="color:#00a8c8">return</span> <span style="color:#d88200">&#34;&#34;</span>
+
+<span style="color:#00a8c8">for</span> <span style="color:#111">i</span> <span style="color:#f92672">in</span> <span style="color:#111">range</span><span style="color:#111">(</span><span style="color:#ae81ff">1</span><span style="color:#111">,</span> <span style="color:#ae81ff">16</span><span style="color:#111">):</span>
+    <span style="color:#00a8c8">print</span><span style="color:#111">(</span><span style="color:#111">str</span><span style="color:#111">(</span><span style="color:#111">i</span><span style="color:#111">)</span> <span style="color:#f92672">+</span> <span style="color:#d88200">&#34; &#34;</span> <span style="color:#f92672">+</span> <span style="color:#111">get_buzz</span><span style="color:#111">(</span><span style="color:#111">i</span><span style="color:#111">))</span> <span style="color:#75715e"># Call a function</span>
+
+</code></pre></div><p>You can check out <a href="https://cis192.github.io">CIS 192</a> for more learning materials, and come to office hours with any questions about Python!</p>
+<h2 id="packaging">Packaging</h2>
+<p>Writing code is useful, reusing code is even more useful! Making sure that you has access to the right packages and are also using the correct <em>version</em> of that package is no easy task. Python&rsquo;s default package manager, <code>pip</code>, will simply take the most recent version of a package and (and its dependencies) and pull it down, not taking into account compatibility with other dependencies and potential conflicts a mismatch might cause. Other package managers built on top of pip, like Poetry, help solve this problem. Poetry is like NPM for JavaScript, or Maven for Java. Take a look that the <a href="#poetry">Poetry demo</a> below for a more in-depth explanation!</p>
+<p>Most importantly, Poetry helps us create <strong>reproducable build environments</strong> wherever we run our code: on our local machines, on our friends&rsquo;s machines, or even on a production server somewher in &ldquo;the cloud.&rdquo;</p>
+<h3 id="how-it-works">How it works</h3>
+<p>Poetry creates and manages two files. <code>pyproject.toml</code> is Poetry&rsquo;s <strong>dependency file</strong>: a human-readable (and writeable) file which declares &ldquo;acceptable versions&rdquo; of packages, generally a range, such as &ldquo;1.1 - 1.12&rdquo;, if version 2.0 contains a breaking change. <code>poetry.lock</code> is the <strong>lock file</strong>: an autogenerated file used to declare <em>specific</em> package versions, including dependencies of dependencies. Poetry uses the lock file to save and persist its resolution of conflicts that it resolves from the list in <code>pyproject.toml</code>.</p>
+<p>The Poetry demo is replicated <a href="#poetry">below</a>, so here&rsquo;s a relevant comic courtesy of <a href="https://xkcd.com">xkcd</a>, describing the spaghetti mess that Poetry helps us avoid:
+<img src="https://imgs.xkcd.com/comics/python_environment.png" alt="Relevant XKCD"></p>
+<h1 id="demos">Demos</h1>
+<h2 id="poetry">Poetry</h2>
+<p>One reoccurring design pattern we see in DevOps is package managers. This is a tool that helps manage your program&rsquo;s dependencies. In other words, the package manager is in charge of keeping track of what packages your project needs to run correctly, and then downloading those packages in a way that makes it easy for your program to use this auxillary code.</p>
+<p>We&rsquo;ll look at a few different package managers over the course of the semester. Node has one called NPM (Node Package Manager), Java has a package manager called Maven, and Python has a few offerings. Note that these package managers are all a little different because they work with different languages that all have different nuances. This is why we can&rsquo;t reuse package managers across languages.</p>
+<p>The Python package manager we&rsquo;ll be using is called Poetry. Essentially, Poetry allows you to download certain Python libraries, then it creates a virtual python environment on your machine to run your code with the given libraries. So, why the virtual environment? The answer is that Python varies a lot from version to version (especially Python 2 compared to Python 3). The virtual environment ensures that you, your team of developers, and your production environment are all on the same version of Python. This way we can avoid any issues and bugs that may arise from code that&rsquo;s written to work on one version of Python actually being run with a different version of Python.</p>
+<p>Now, let&rsquo;s get into how to actually use Poetry. First, make sure that you have Poetry installed on your machine, instructions for installation can be found <a href="https://python-poetry.org/docs/">here</a>.</p>
+<p>Once you have Poetry installed, let&rsquo;s create a new project:</p>
+<pre><code># Create a new folder called poetry_demo
+$ mkdir poetry_demo
+# Enter the new folder
+$ cd poetry_demo
+$ poetry init
+</code></pre><p>Now Poetry will give you lots of options for how to initialize your project, just hit enter for all of them (Poetry will use the default setup which is fine for our purposes). Once you&rsquo;ve finished, you&rsquo;ll see that there is a new file <code>pyproject.toml</code> in the directory, this is the file that stores the information we just initialized.</p>
+<p>Next, let&rsquo;s add a dependency:</p>
+<pre><code>$ poetry add numpy
+Creating virtualenv poetry-demo-KkU142w6-py3.9 in /Users/airbenderang/Library/Caches/pypoetry/virtualenvs
+Using version ^1.19.5 for numpy
+
+Updating dependencies
+Resolving dependencies... (39.8s)
+
+Writing lock file
+
+Package operations: 1 install, 0 updates, 0 removals
+
+  • Installing numpy (1.19.5)
+</code></pre><p>Now, Poetry actually does two things here. It downloads NumPy, but before that it actually creates a virtual environment which we are going to use to run our Python code. If we wanted to use a deprecated version of Python (like Python 2) we could configure Poetry to setup the virtual environment so it runs an older release of Python. Again, you will see a new file in your directory, this is the <code>poetry.lock</code> file. It doesn&rsquo;t make much sense to humans, but the <code>poetry.lock</code> file tracks which packages your program depends on and the version number of those packages.</p>
+<p>Finally, let&rsquo;s run some code on Poetry&rsquo;s virtual environment. There are two ways that you will run python programs with Poetry. The first is you can type <code>poetry run script.py</code> and this would run a Python script in the Poetry environment, but instead we will be opening a new shell that will have the Poetry virtual environment as our default Python environment:</p>
+<pre><code>$ poetry shell
+Spawning shell within /Users/airbenderang/Library/Caches/pypoetry/virtualenvs/poetry-demo-KkU142w6-py3.9
+$ . /Users/airbenderang/Library/Caches/pypoetry/virtualenvs/poetry-demo-KkU142w6-py3.9/bin/activate
+# Open a new Python interactive terminal
+$ python
+Python 3.9.1 (default, Dec 24 2020, 16:53:18) 
+[Clang 12.0.0 (clang-1200.0.32.28)] on darwin
+Type &quot;help&quot;, &quot;copyright&quot;, &quot;credits&quot; or &quot;license&quot; for more information.
+&gt;&gt;&gt; import numpy as np
+&gt;&gt;&gt; x = np.array([[1,2],[3,4]])
+&gt;&gt;&gt; x
+array([[1, 2],
+       [3, 4]])
+&gt;&gt;&gt; y = np.linalg.inv(x)
+&gt;&gt;&gt; y
+array([[-2. ,  1. ],
+       [ 1.5, -0.5]])
+&gt;&gt;&gt; exit() # To leave the Python terminal
+# Then exit again to leave the Poetry shell
+$ exit
+</code></pre><p>It looks like NumPy works! This means that Poetry has been properly able to manage our dependencies so that they are accessible when we run our Python code with Poetry. Now, let&rsquo;s make a simple Python file and have Poetry run it. Create a new file called <code>average.py</code> in the same directory as your <code>pyproject.toml</code> and <code>poetry.lock</code> and paste this code into it:</p>
+<pre><code>import sys
+import numpy as np
+
+if len(sys.argv) &lt; 2:
+    print(&quot;Not enough command line arguments&quot;)
+    exit()
+
+xs = []
+try:
+    for i in range(1, len(sys.argv)):
+        xs.append(int(sys.argv[i]))
+except:
+    print(&quot;Command line arguments are not integers&quot;)
+    exit()
+
+print(np.average(np.asarray(xs)))
+</code></pre><p>Now, we can run this in the virtual environment created by Poetry:</p>
+<pre><code>$ poetry run python average.py 1 2 3 4
+2.5
+</code></pre><p>Awesome, it looks like this is working, too. Try changing around the command line arguments!</p>
+
+  
+  </div>
+</article>
+
+    </div>
+    <footer id="footer">
+  <div class="footer-left">
+    Copyright  &copy; 2025  CIS 1912: DevOps 
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+         
+        <li><a href="/">Home</a></li>
+         
+        <li><a href="/lectures/">Schedule</a></li>
+         
+        <li><a href="/resources/">Resources</a></li>
+         
+        <li><a href="/syllabus/">Syllabus</a></li>
+         
+        <li><a href="/staff/">Staff</a></li>
+         
+        <li><a href="https://www.gradescope.com/courses/844801">Gradescope</a></li>
+         
+        <li><a href="https://edstem.org/us/courses/65023/discussion/">Ed</a></li>
+        
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+  </div>
+  
+</body>
+
+<link rel="stylesheet" href=/lib/font-awesome/css/all.min.css>
+<script src=/lib/jquery/jquery.min.js></script>
+<script src=/js/main.js></script>
+</html>

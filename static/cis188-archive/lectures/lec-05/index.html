@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title> Practical Kubernetes | CIS 1912: DevOps</title>
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="all,follow">
+  <meta name="googlebot" content="index,follow,snippet,archive">
+  <meta property="og:title" content="Practical Kubernetes" />
+<meta property="og:description" content="Lecture Five: Practical Kubernetes We covered the conceptual foundation and some of the basic Kubernetes resources last week, and this week we&rsquo;ll be diving into more concepts and resource types in Kubernetes that build on top of the foundation we built. Each resource we cover will have an associated example with requisite yaml. Please make sure to also check out the Kubernetes documentation as well! The important thing isn&rsquo;t to memorize the yaml, but to understand the concepts so we can extend our understanding of what Kubernetes can do." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://cis1912.org/lectures/lec-05/" />
+<meta property="article:published_time" content="2020-12-01T00:00:00+00:00" />
+<meta property="article:modified_time" content="2024-10-10T00:00:00+00:00" />
+
+  <meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Practical Kubernetes"/>
+<meta name="twitter:description" content="Lecture Five: Practical Kubernetes We covered the conceptual foundation and some of the basic Kubernetes resources last week, and this week we&rsquo;ll be diving into more concepts and resource types in Kubernetes that build on top of the foundation we built. Each resource we cover will have an associated example with requisite yaml. Please make sure to also check out the Kubernetes documentation as well! The important thing isn&rsquo;t to memorize the yaml, but to understand the concepts so we can extend our understanding of what Kubernetes can do."/>
+
+  
+  
+    
+  
+  
+  <link rel="stylesheet" href="https://cis1912.org/css/style-white.css">
+  
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  
+
+  <link rel="icon" type="image/png" href="https://cis1912.org/img/favicon.ico" />
+  
+  
+  
+    
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+	ga('create', 'false', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+
+  
+  
+</head>
+
+
+<body>
+  
+
+  <div class="max-width mx-auto px3 ltr">
+  <div class="content index py4">
+    <header id="header">
+  <a href="https://cis1912.org/">
+  
+    <div id="logo" style="background-image: url(https://cis1912.org/img/logo.png)"></div>
+  
+  <div id="title">
+    <h1>CIS 1912: DevOps</h1>
+  </div>
+  </a>
+  <div id="nav">
+    <ul>
+      <li class="icon">
+        <a href="#"><i class="fas fa-bars fa-2x"></i></a>
+      </li>
+      
+        <li><a href="/">Home</a></li>
+      
+        <li><a href="/lectures/">Schedule</a></li>
+      
+        <li><a href="/resources/">Resources</a></li>
+      
+        <li><a href="/syllabus/">Syllabus</a></li>
+      
+        <li><a href="/staff/">Staff</a></li>
+      
+        <li><a href="https://www.gradescope.com/courses/844801">Gradescope</a></li>
+      
+        <li><a href="https://edstem.org/us/courses/65023/discussion/">Ed</a></li>
+      
+    </ul>
+  </div>
+</header>
+
+
+
+    <style>
+      .main-content {
+        font-family: BlinkMacSystemFont,-apple-system,Segoe UI,Roboto,Oxygen,Ubuntu,Cantarell,Fira Sans,Droid Sans,Helvetica Neue,Helvetica,Arial,sans-serif;
+      }
+      #header #logo {
+        filter: none;
+        -webkit-filter: none;
+        background-size: contain;
+        border-radius: 0;
+      }
+    
+    </style>
+    <div class="main-content">
+    
+<article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <div class="content" itemprop="articleBody">
+  
+    <h1 id="lecture-five-practical-kubernetes">Lecture Five: Practical Kubernetes</h1>
+<p>We covered the conceptual foundation and some of the basic Kubernetes resources last week, and this week we&rsquo;ll be diving into more concepts and resource types in Kubernetes that build on top of the foundation we built. Each resource we cover will have an associated example with requisite yaml. Please make sure to also check out the <a href="https://kubernetes.io/docs/home/">Kubernetes documentation</a> as well! The important thing isn&rsquo;t to memorize the yaml, but to understand the concepts so we can extend our understanding of what Kubernetes can do.</p>
+<h2 id="namespaces">Namespaces</h2>
+<p><a href="https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/">Namespaces</a> are a way to separate resources by a common name. They&rsquo;re useful for organization as well as permissioning. While most Kubernetes resources are scoped to a namespace, resources having to do with the whole cluster are not (e.g. ClusterRoleBindings). Namespaces aren&rsquo;t a foolproof way to separate resources within a cluster, because they don&rsquo;t provide any strong security guarantees.</p>
+<div class="highlight"><pre style="color:#272822;background-color:#fafafa;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#00a8c8">apiVersion</span><span style="color:#111">:</span> v1
+<span style="color:#00a8c8">kind</span><span style="color:#111">:</span> Namespace
+<span style="color:#00a8c8">metadata</span><span style="color:#111">:</span>
+  <span style="color:#00a8c8">name</span><span style="color:#111">:</span> cphalen
+</code></pre></div><p>Two namespaces are available by default in a cluster: <code>default</code> for your own resources and <code>kube-system</code>, for resources the cluster needs to run itself. You can get resources belonging to a certain namespace with by adding <code>-n &lt;namespace&gt;</code> to a <code>kubectl get</code> command.</p>
+<h2 id="secret">Secret</h2>
+<p><a href="https://kubernetes.io/docs/concepts/configuration/secret/">Secrets</a> are used to store sensitive runtime information such as API keys, username/passwords, or certificates that shouldn&rsquo;t be stored in source code. Secrets are stored as base64 in the API server. On the container, they can be mounted to files or exported to environment variables. Note that while they are base64 encoded and are called &ldquo;Secrets&rdquo;, if an attacker gains admin privileges on the Kubernetes API they can just decode the Secrets from base64 and read them. So, while Secrets are intended to be for sensitive information, they do not actually provide protection against an attacker if the attacker gets the <code>read:secret</code> permission.</p>
+<p>The default secret type is <a href="https://kubernetes.io/docs/concepts/configuration/secret/#opaque-secrets">Opaque</a> which can be used to store arbitrary data. Other <a href="https://kubernetes.io/docs/concepts/configuration/secret/#secret-types">types of Secrets</a> can be used for specific sensitive information (such as SSH credentials or TLS data).</p>
+<p>The example below will mount the contents of the Secret as two files, <code>/etc/auth/username</code> and <code>/etc/auth/password</code>. The <code>mountPath</code> of the volume is the directory where the secret files are then generated in.</p>
+<div class="highlight"><pre style="color:#272822;background-color:#fafafa;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">---
+<span style="color:#00a8c8">apiVersion</span><span style="color:#111">:</span> v1
+<span style="color:#00a8c8">kind</span><span style="color:#111">:</span> Secret
+<span style="color:#00a8c8">metadata</span><span style="color:#111">:</span>
+  <span style="color:#00a8c8">name</span><span style="color:#111">:</span> basic-auth
+<span style="color:#00a8c8">type</span><span style="color:#111">:</span> kubernetes.io/basic-auth
+<span style="color:#00a8c8">stringData</span><span style="color:#111">:</span>
+  <span style="color:#00a8c8">username</span><span style="color:#111">:</span> admin
+  <span style="color:#00a8c8">password</span><span style="color:#111">:</span> t0p-Secret
+---
+<span style="color:#00a8c8">apiVersion</span><span style="color:#111">:</span> v1
+<span style="color:#00a8c8">kind</span><span style="color:#111">:</span> Pod
+<span style="color:#00a8c8">metadata</span><span style="color:#111">:</span>
+  <span style="color:#00a8c8">name</span><span style="color:#111">:</span> mypod
+<span style="color:#00a8c8">spec</span><span style="color:#111">:</span>
+  <span style="color:#00a8c8">containers</span><span style="color:#111">:</span>
+  - <span style="color:#00a8c8">name</span><span style="color:#111">:</span> mypod
+    <span style="color:#00a8c8">image</span><span style="color:#111">:</span> redis
+    <span style="color:#00a8c8">volumeMounts</span><span style="color:#111">:</span>
+    - <span style="color:#00a8c8">name</span><span style="color:#111">:</span> auth
+      <span style="color:#00a8c8">mountPath</span><span style="color:#111">:</span> <span style="color:#d88200">&#34;/etc/auth&#34;</span>
+      <span style="color:#00a8c8">readOnly</span><span style="color:#111">:</span> <span style="color:#00a8c8">true</span>
+  <span style="color:#00a8c8">volumes</span><span style="color:#111">:</span>
+  - <span style="color:#00a8c8">name</span><span style="color:#111">:</span> auth
+    <span style="color:#00a8c8">secret</span><span style="color:#111">:</span>
+      <span style="color:#00a8c8">secretName</span><span style="color:#111">:</span> basic-auth
+</code></pre></div><h2 id="configmap">ConfigMap</h2>
+<p><a href="https://kubernetes.io/docs/concepts/configuration/configmap/">ConfigMaps</a> are for non-sensitive runtime configuration. Similar to Secrets, ConfigMaps can be mounted to files or exported to environment variables. ConfigMaps allow you to separate your configuration from your actual code and business logic. This means you don&rsquo;t have to rebuild container images whenever you change configuration.</p>
+<p>ConfigMap data can also be mounted as either files or environment variables inside the container.</p>
+<div class="highlight"><pre style="color:#272822;background-color:#fafafa;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#00a8c8">apiVersion</span><span style="color:#111">:</span> v1
+<span style="color:#00a8c8">kind</span><span style="color:#111">:</span> ConfigMap
+<span style="color:#00a8c8">metadata</span><span style="color:#111">:</span>
+  <span style="color:#00a8c8">name</span><span style="color:#111">:</span> game-demo
+<span style="color:#00a8c8">data</span><span style="color:#111">:</span>
+  <span style="color:#75715e"># property-like keys; each key maps to a simple value</span>
+  <span style="color:#00a8c8">player_initial_lives</span><span style="color:#111">:</span> <span style="color:#d88200">&#34;3&#34;</span>
+  <span style="color:#00a8c8">ui_properties_file_name</span><span style="color:#111">:</span> <span style="color:#d88200">&#34;user-interface.properties&#34;</span>
+  <span style="color:#75715e"># file-like keys</span>
+  <span style="color:#00a8c8">game.properties</span><span style="color:#111">:</span> <span style="color:#d88200">|
+</span><span style="color:#d88200">    enemy.types=aliens,monsters</span>
+    player.maximum-lives=<span style="color:#ae81ff">5</span>
+  <span style="color:#00a8c8">user-interface.properties</span><span style="color:#111">:</span> <span style="color:#d88200">|
+</span><span style="color:#d88200">    color.good=purple</span>
+    color.bad=yellow
+    allow.textmode=<span style="color:#00a8c8">true</span>
+</code></pre></div><h2 id="jobs-and-cronjobs">Jobs and Cronjobs</h2>
+<p>A <a href="https://kubernetes.io/docs/concepts/workloads/controllers/job/">Job</a> is a short-lived containers that are intended to run a specific task. <a href="https://kubernetes.io/docs/concepts/workloads/controllers/cron-jobs/">CronJobs</a> allow Jobs to be run on schedules. The scheduling syntax is the <a href="https://en.wikipedia.org/wiki/Cron">same scheduling format as Cron in Unix</a>. You can use the tool <a href="https://crontab.guru/">https://crontab.guru/</a> to select the correct schedule.</p>
+<div class="highlight"><pre style="color:#272822;background-color:#fafafa;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#00a8c8">apiVersion</span><span style="color:#111">:</span> batch/v1beta1
+<span style="color:#00a8c8">kind</span><span style="color:#111">:</span> CronJob
+<span style="color:#00a8c8">metadata</span><span style="color:#111">:</span>
+  <span style="color:#00a8c8">name</span><span style="color:#111">:</span> hello
+<span style="color:#00a8c8">spec</span><span style="color:#111">:</span>
+  <span style="color:#75715e"># This schedule is once per hour</span>
+  <span style="color:#00a8c8">schedule</span><span style="color:#111">:</span> <span style="color:#d88200">&#34;0 * * * *&#34;</span> 
+  <span style="color:#00a8c8">jobTemplate</span><span style="color:#111">:</span>
+    <span style="color:#00a8c8">spec</span><span style="color:#111">:</span>
+      <span style="color:#00a8c8">template</span><span style="color:#111">:</span>
+        <span style="color:#00a8c8">spec</span><span style="color:#111">:</span>
+          <span style="color:#00a8c8">containers</span><span style="color:#111">:</span>
+          - <span style="color:#00a8c8">name</span><span style="color:#111">:</span> hello
+            <span style="color:#00a8c8">image</span><span style="color:#111">:</span> busybox
+            <span style="color:#00a8c8">imagePullPolicy</span><span style="color:#111">:</span> IfNotPresent
+            <span style="color:#00a8c8">args</span><span style="color:#111">:</span>
+            - /bin/sh
+            - -c
+            - date; echo Hello from the Kubernetes cluster
+          <span style="color:#00a8c8">restartPolicy</span><span style="color:#111">:</span> OnFailure
+
+</code></pre></div><p>Why do we have to nest four or five YAML objects with <code>template</code> and <code>spec</code> just to run a job on a schedule? The answer comes down to modularity and the construction of the API. A CronJob is just a Job with a schedule, and a Job is in turn just a Pod that runs to completion. Kubernetes takes advantage of this conceptual hierarchy, and embeds references to API objects within API objects. In a quite literal sense, a CronJob has a Job, which in turn has a Pod. While this modularity results in more complex YAML, it makes it much easier for us to reason about resources which are simply compositions of other resources.</p>
+<h2 id="volumes">Volumes</h2>
+<p><a href="https://kubernetes.io/docs/concepts/storage/volumes/">Volumes</a> are a way to reference some kind of non-ephemeral, persistent storage from within the cluster. They&rsquo;re used to provide filesystem-based persistence across application restarts or (in some cases) node reschedules. There are <a href="https://kubernetes.io/docs/concepts/storage/persistent-volumes/">PersistentVolumes</a> (PV) which is a physical representation of a disk in the API. Then we have PersistentVolumeClaims (PVCs) which is a request for access to a PersistentVolume. Then we can bind PVCs to PVs.</p>
+<p>A PV is really a representation of the physical block where storage exists, and the PVC is a request to access that storage. This feels a little over-engineered, but it is actually really helpful when using cloud services like AWS where volumes are allocated independently of the machine running the containers.</p>
+<p>This is one of the key components of Kubernetes that lets us treat our serves as cattle, not pets. When volumes and storage are separated from our application code, we&rsquo;re able to separate our concerns around running our code from persisting our data.</p>
+<h2 id="statefulset">StatefulSet</h2>
+<p><a href="https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/">StatefulSet</a> is a deployment where each pod gets a persistent volume. This is used for applications that need to be resistant to reboots. Common applications include:</p>
+<ul>
+<li>Distributed Databases: MongoDB, CockroachDB, Cassandra</li>
+<li>Games: Minecraft</li>
+<li>Search: AWS Elasticsearch</li>
+</ul>
+<p><img src="/img/lec05/statefulset.png" alt="StatefulSet Diagram"></p>
+<p>Note that each StatefulSet has its own PersistentVolume, and so writes to PersistentVolume 0 from Pod 0 in the diagram will not be readable from either Pod 1 or Pod 2. The application itself will need to coordinate the state of the PersistentVolumes using some kind of replication strategy.</p>
+<h2 id="daemonset">DaemonSet</h2>
+<p>A <a href="https://kubernetes.io/docs/concepts/workloads/controllers/daemonset/">DaemonSet</a> is a deployment which has one pod running on each node in the cluster. These are used to provide node-wide services like authentication gateways, ingress routers, and log collectors.</p>
+<p><img src="/img/lec05/daemonset.png" alt="DaemonSet Diagram"></p>
+<h2 id="annotations">Annotations</h2>
+<p><a href="https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/">Annotations</a> aren&rsquo;t resources on their own, but a type of resource metadata used to store auxillary key/value information about a resource. Unlike labels, resources can&rsquo;t be queried by annotations. Annotations aren&rsquo;t used by Kubernetes itself, but other software in and around your cluster might use the extra metadata to determine its own behavior.</p>
+<div class="highlight"><pre style="color:#272822;background-color:#fafafa;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#00a8c8">apiVersion</span><span style="color:#111">:</span> v1
+<span style="color:#00a8c8">kind</span><span style="color:#111">:</span> Pod
+<span style="color:#00a8c8">metadata</span><span style="color:#111">:</span>
+  <span style="color:#00a8c8">name</span><span style="color:#111">:</span> annotations-demo
+  <span style="color:#00a8c8">annotations</span><span style="color:#111">:</span> <span style="color:#75715e"># can be any key/value combination</span>
+    <span style="color:#00a8c8">imageregistry</span><span style="color:#111">:</span> <span style="color:#d88200">&#34;https://hub.docker.com/&#34;</span>
+<span style="color:#00a8c8">spec</span><span style="color:#111">:</span>
+  <span style="color:#00a8c8">containers</span><span style="color:#111">:</span>
+  - <span style="color:#00a8c8">name</span><span style="color:#111">:</span> nginx
+    <span style="color:#00a8c8">image</span><span style="color:#111">:</span> nginx<span style="color:#111">:</span><span style="color:#ae81ff">1.14.2</span>
+    <span style="color:#00a8c8">ports</span><span style="color:#111">:</span>
+    - <span style="color:#00a8c8">containerPort</span><span style="color:#111">:</span> <span style="color:#ae81ff">80</span>
+</code></pre></div><!-- raw HTML omitted -->
+<!-- raw HTML omitted -->
+
+  
+  </div>
+</article>
+
+    </div>
+    <footer id="footer">
+  <div class="footer-left">
+    Copyright  &copy; 2025  CIS 1912: DevOps 
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+         
+        <li><a href="/">Home</a></li>
+         
+        <li><a href="/lectures/">Schedule</a></li>
+         
+        <li><a href="/resources/">Resources</a></li>
+         
+        <li><a href="/syllabus/">Syllabus</a></li>
+         
+        <li><a href="/staff/">Staff</a></li>
+         
+        <li><a href="https://www.gradescope.com/courses/844801">Gradescope</a></li>
+         
+        <li><a href="https://edstem.org/us/courses/65023/discussion/">Ed</a></li>
+        
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+  </div>
+  
+</body>
+
+<link rel="stylesheet" href=/lib/font-awesome/css/all.min.css>
+<script src=/lib/jquery/jquery.min.js></script>
+<script src=/js/main.js></script>
+</html>

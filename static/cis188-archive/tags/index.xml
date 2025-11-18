@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Tags on CIS 188: DevOps</title>
+    <link>https://pawa.lt/cis188-archive/tags/</link>
+    <description>Recent content in Tags on CIS 188: DevOps</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    
+	<atom:link href="https://pawa.lt/cis188-archive/tags/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+  </channel>
+</rss>

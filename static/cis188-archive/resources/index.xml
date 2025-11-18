@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Resources on CIS 188: DevOps</title>
+    <link>https://pawa.lt/cis188-archive/resources/</link>
+    <description>Recent content in Resources on CIS 188: DevOps</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    
+	<atom:link href="https://pawa.lt/cis188-archive/resources/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Kube Tricks</title>
+      <link>https://pawa.lt/cis188-archive/resources/kube_tricks/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pawa.lt/cis188-archive/resources/kube_tricks/</guid>
+      <description>Quickly scaffolding manifests:
+kubectl create deployment foo \ --image=nginx:1.21 \ --dry-run=client \ -o yaml K8s YAML generator with descriptions:
+https://k8syaml.com/
+Debugging workflow:
+ kubectl get  Do I see the resources I expect? What are their states?   kubectl describe  What are the events? Does the describe line up with your manifest?   kubectl logs  Are there errors in the logs? Are your requests making it to the application?</description>
+    </item>
+    
+  </channel>
+</rss>

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Staffs on CIS 188: DevOps</title>
+    <link>https://pawa.lt/cis188-archive/staff/</link>
+    <description>Recent content in Staffs on CIS 188: DevOps</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    
+	<atom:link href="https://pawa.lt/cis188-archive/staff/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title></title>
+      <link>https://pawa.lt/cis188-archive/staff/armaan/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pawa.lt/cis188-archive/staff/armaan/</guid>
+      <description>Wrangling open source maintainers</description>
+    </item>
+    
+    <item>
+      <title></title>
+      <link>https://pawa.lt/cis188-archive/staff/campbell/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pawa.lt/cis188-archive/staff/campbell/</guid>
+      <description>Prefers alternating between tabs and spaces</description>
+    </item>
+    
+    <item>
+      <title></title>
+      <link>https://pawa.lt/cis188-archive/staff/peyton/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pawa.lt/cis188-archive/staff/peyton/</guid>
+      <description>Lost in the zero trust sauce</description>
+    </item>
+    
+    <item>
+      <title></title>
+      <link>https://pawa.lt/cis188-archive/staff/rohan/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://pawa.lt/cis188-archive/staff/rohan/</guid>
+      <description>&amp;ldquo;GitHub Rohan&amp;rdquo;</description>
+    </item>
+    
+  </channel>
+</rss>

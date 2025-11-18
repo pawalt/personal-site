@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title> Continuous Integration / Continuous Deployment | CIS 1912: DevOps</title>
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="all,follow">
+  <meta name="googlebot" content="index,follow,snippet,archive">
+  <meta property="og:title" content="Continuous Integration / Continuous Deployment" />
+<meta property="og:description" content="Lecture Eight: CI/CD Developer Experience Reproducibility through automation is one of the most important goals of DevOps we&rsquo;ve discussed throughout the course. When it comes to deployment, though, there are quite a few steps that we need to keep in mind:
+ Make code change Test code Build Docker image Tag Docker image Push to Docker Hub Update Kubernetes manifests to new Docker image tag Apply updated manifests  Importantly, steps 3-7 are the same every time we deploy our code." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://cis1912.org/lectures/lec-09/" />
+<meta property="article:published_time" content="2020-12-01T00:00:00+00:00" />
+<meta property="article:modified_time" content="2024-11-21T00:00:00+00:00" />
+
+  <meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Continuous Integration / Continuous Deployment"/>
+<meta name="twitter:description" content="Lecture Eight: CI/CD Developer Experience Reproducibility through automation is one of the most important goals of DevOps we&rsquo;ve discussed throughout the course. When it comes to deployment, though, there are quite a few steps that we need to keep in mind:
+ Make code change Test code Build Docker image Tag Docker image Push to Docker Hub Update Kubernetes manifests to new Docker image tag Apply updated manifests  Importantly, steps 3-7 are the same every time we deploy our code."/>
+
+  
+  
+    
+  
+  
+  <link rel="stylesheet" href="https://cis1912.org/css/style-white.css">
+  
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  
+
+  <link rel="icon" type="image/png" href="https://cis1912.org/img/favicon.ico" />
+  
+  
+  
+    
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+	ga('create', 'false', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+
+  
+  
+</head>
+
+
+<body>
+  
+
+  <div class="max-width mx-auto px3 ltr">
+  <div class="content index py4">
+    <header id="header">
+  <a href="https://cis1912.org/">
+  
+    <div id="logo" style="background-image: url(https://cis1912.org/img/logo.png)"></div>
+  
+  <div id="title">
+    <h1>CIS 1912: DevOps</h1>
+  </div>
+  </a>
+  <div id="nav">
+    <ul>
+      <li class="icon">
+        <a href="#"><i class="fas fa-bars fa-2x"></i></a>
+      </li>
+      
+        <li><a href="/">Home</a></li>
+      
+        <li><a href="/lectures/">Schedule</a></li>
+      
+        <li><a href="/resources/">Resources</a></li>
+      
+        <li><a href="/syllabus/">Syllabus</a></li>
+      
+        <li><a href="/staff/">Staff</a></li>
+      
+        <li><a href="https://www.gradescope.com/courses/844801">Gradescope</a></li>
+      
+        <li><a href="https://edstem.org/us/courses/65023/discussion/">Ed</a></li>
+      
+    </ul>
+  </div>
+</header>
+
+
+
+    <style>
+      .main-content {
+        font-family: BlinkMacSystemFont,-apple-system,Segoe UI,Roboto,Oxygen,Ubuntu,Cantarell,Fira Sans,Droid Sans,Helvetica Neue,Helvetica,Arial,sans-serif;
+      }
+      #header #logo {
+        filter: none;
+        -webkit-filter: none;
+        background-size: contain;
+        border-radius: 0;
+      }
+    
+    </style>
+    <div class="main-content">
+    
+<article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <div class="content" itemprop="articleBody">
+  
+    <h1 id="lecture-eight-cicd">Lecture Eight: CI/CD</h1>
+<h2 id="developer-experience">Developer Experience</h2>
+<p>Reproducibility through automation is one of the most important goals of DevOps we&rsquo;ve discussed throughout the course. When it comes to deployment, though, there are quite a few steps that we need to keep in mind:</p>
+<ol>
+<li>Make code change</li>
+<li>Test code</li>
+<li>Build Docker image</li>
+<li>Tag Docker image</li>
+<li>Push to Docker Hub</li>
+<li>Update Kubernetes manifests to new Docker image tag</li>
+<li>Apply updated manifests</li>
+</ol>
+<p>Importantly, steps 3-7 are the same every time we deploy our code. Automating these steps can make the deployment process quicker so that developers can focus on making code changes instead of deploying those changes.</p>
+<p>Developers should only have to worry about making changes to code and testing those changes. If tests are all green, then code should be seamlessly deployed to production.</p>
+<h2 id="ci-vs-cd-vs-cd-oh-my">CI vs. CD vs. CD, oh my!</h2>
+<p>There are three different concepts that comprise the automated deployment process. The phrase &ldquo;CI/CD&rdquo; is relatively common, and refers to the combination of Continuous Integration and Continuous Deployment.</p>
+<h3 id="continuous-integration-ci">Continuous Integration (CI)</h3>
+<p>This is the practice of merging in code changes to the main branch regularly with automated tests that run on the changes, merging changes as they are completed, while being confident that the changes won&rsquo;t break the system.</p>
+<h3 id="continuous-delivery">Continuous Delivery</h3>
+<p>This practice extends CI to also deploy changes to a staging environment where team members can play around with code changes interactively in a production-like environment. While staging environments won&rsquo;t replace an automated test suite, the two complement each other quite well.</p>
+<h3 id="continuous-deployment-cd">Continuous Deployment (CD)</h3>
+<p>This practice extends CI to deploy code changes into production if all tests pass. A big benefit of continuous deployment is small, atomic updates to the production environment. Larger deploys have a larger chance of causing issues, even with thorough testing, and so small deploys allow problems to be identified and mitigated more effectively.</p>
+<h4 id="side-note-canary-deployment">Side-Note: Canary Deployment</h4>
+<p>Canary Deployments are a specific kind of automated deployment where users are gradually shifted from one iteration of the codebase to another. You can direct 5% of traffic to the new deployment and 95% of traffic to the old deployment. If there is an issue with the new deployment, clients can retry a request, and will most likely be routed to the older deployment. While canary deployments are a good way to confirm that large changes have been implemented correctly, the practice requires extensive automated monitoring to be able to identify issues in canaries and route traffic back to the standard deployments if necessary. They also require a certain scale: if a service only has ten clients, then routing 5% of traffic to a new deployment won&rsquo;t necessary give much useful data.</p>
+<h2 id="git-flow">Git Flow</h2>
+<p>A workflow for how to combine CI/CD with Git or another version control system is <strong>Gitflow</strong>:</p>
+<p><img src="/img/lec08/git_flow_vis.png" alt="Git Flow Visualization"></p>
+<p>While Gitflow is well adopted, it is not perfect for everything. An alternative is <strong>Trunk Flow</strong> where you have different branches for environments (staging, production, etc.) and branch off of those environment branches depending on what kind of code change you are making (this works really well for libraries that have lots of different feature sets and versions, but not as well for applications with a single deliverable like a web app). The general rule is: use Gitflow until Gitflow stops working for you. Once Git Flow starts to constrain your development process, you can swap to a Trunk Flow or do something more customized to fit your needs.</p>
+<h2 id="how-does-cicd-work">How Does CI/CD Work?</h2>
+<p>Fundamentally, CI/CD is just the automatic execution of shell scripts on a machine to perform steps 3-7 of the deployment process. Typically, CI/CD is linked with a version control (e.g. Git) repository such that actions are triggered by Git events (making a pull request, merging into main, creating an issue, etc.). Luckily for us, many CI/CD systems are configured using YAML with system-specific configuration wrapping the actual commands you want to run.</p>
+<h2 id="github-actions">GitHub Actions</h2>
+<p>GitHub Actions is the CI/CD provider that we will be using for this course, it is built into GitHub and has a lot of excellent community support. To use GitHub Actions we add <strong>workflows</strong> to the <code>.github/workflows</code> directory within our repository. Each workflow represents a distinct goal or process (lint my project and deploy, run tests, remove unnecessary files, etc.). A workflow is composed of a set of <strong>jobs</strong>, each of which is essentially a single step towards accomplishing the workflow goal. Jobs can either be bash commands specified with the <code>run</code> key or third party reusable components called <strong>actions</strong>. There is a extensive <a href="https://github.com/marketplace">GitHub Actions Marketplace</a> where you can browse these pre-built 3rd party actions, often there are already an action written for a task you are hoping to accomplish with workflows (for example, there are actions for publishing to NPM or linting Python code).</p>
+<p>The <a href="https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions">Workflow Syntax</a> documentation is a good place to start learning how to author workflows. It&rsquo;s a bit verbose but contains a lot of what you&rsquo;ll need to know.</p>
+<h2 id="debugging-cicd">Debugging CI/CD</h2>
+<p>Fair warning: debugging CI/CD can be pretty difficult, since we need to make a commit to Git every time we want to see how the workflow behaves. The VSCode <a href="https://marketplace.visualstudio.com/items?itemName=redhat.vscode-yaml">YAML extension</a> will help catch syntax errors in your GitHub Actions workflows, which can be a source of frustration if you wait to find these after pushing changes.</p>
+<h1 id="gitops">GitOps</h1>
+<p>Instead of installing new versions of our application into our cluster with Helm, we can actually store the desired state of our cluster within the Git repository itself. This process is called <strong>GitOps</strong> and it affords us a lot of benefits:</p>
+<ul>
+<li><strong>Rollback</strong>: if a change breaks out application, we can rollback using the tools available through Git.</li>
+<li><strong>Discoverability</strong>: just like in any Git repository, we can search and share our manifests.</li>
+<li><strong>Reproducibility</strong>: changes can be made easily to the Git repository without running additional commands to update our cluster.</li>
+</ul>
+<h2 id="argo">Argo</h2>
+<p><a href="https://argoproj.github.io/">Argo</a> is a tool that we can use to achieve GitOps. Essentially Argo is a process that lives in the Kubernetes cluster, polling the corresponding Git repository to check for changes. If we modify the manifests within the Git repository that is being watched, Argo will see those changes and change the desired state of our Kubernetes cluster accordingly. So, to make a change to the cluster, all we need to do is make those changes in our manifests and push those changes to our Git repository. This is much more streamlined than installing the new application with Helm every time we need to update our cluster.</p>
+<p><img src="/img/lec08/argo_vis.png" alt="Argo Visualization"></p>
+<h2 id="where-weve-been">Where We&rsquo;ve Been</h2>
+<!-- raw HTML omitted -->
+<p>Let&rsquo;s diagram out the tools which we&rsquo;ve learned about this semester:</p>
+<p><img src="/img/lec08/drawing_1.png" alt="Lectures 0 to 7 Visualization"></p>
+<p>Here we see both Peyton and Armaan can both run our FastAPI server locally thanks to Docker. Then, if Armaan wants to host the FastAPI server in the cloud, he can request a cluster through AWS&rsquo;s EKS service (any other cloud provider with a Kubernetes offering would also work). From here, Armaan can apply the Kubernetes manifests into his cluster using kubectl.</p>
+<p><img src="/img/lec08/drawing_2.png" alt="Lecture 8 Visualization"></p>
+<p>Now, with the inclusion of CI/CD, we can see how this process changes. Now, if Armaan wants to deploy the FastAPI server from his local machine, he can <code>git push</code> the code into a GitHub repository. Assuming we have setup our CI/CD using GitHub Actions, we would then have two major GitHub Actions which are triggered by this push. First, the newly built Docker image is published to the GitHub Container Registry (abbreviated GCR, but watch out because Google Container Registry is also GCR) and typically tagged by the Git SHA of the most recent commit. Additionally, another action runs <code>helm upgrade</code> on our Kubernetes cluster to load the new manifests into the cluster. The new manifests will link to the new Docker image which we published to GCR and will pull that image into our Kubernetes cluster.</p>
+<h1 id="demo">Demo</h1>
+<p>To do the demo you need your own Git repository so you can test out workflows. Fork <a href="https://github.com/cis1912/ci-demo">this</a> repository and clone the forked repository onto your machine. Once you have cloned the forked repository, reset the repository to an earlier commit as follows so that we can do the steps demoed in lecture:</p>
+<pre><code>$ cd ci-demo
+# Reset to the commit labelled &quot;testing&quot;
+$ git reset 43d48188948c858e6428f064f41ada57484af33b
+# Ignore changes in staging area
+$ git restore .
+# Push this reset to the repository in GitHub
+$ git push --force
+</code></pre><p>Now, let&rsquo;s take a look at our <code>publish.yaml</code> workflow in <code>.github/workflows</code>:</p>
+<pre><code class="language-(yaml)" data-lang="(yaml)">name: Lint and Publish
+on: push
+jobs:
+  lint:
+    name: Run lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: |
+          yarn install
+          yarn lint
+  publish:
+    name: Publish to github package registry
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: echo &quot;TODO:&quot;
+</code></pre><p>So we have two jobs, one that lints and the other which publishes. Looking at the lint job, we see that it runs two commands: <code>yarn install</code> and <code>yarn lint</code>. This is just installing the yarn dependencies and then running the associated lint command. We also see that both jobs have <code>runs-on: ubuntu-latest</code> which tells GitHub Actions that we want this job to run on an Ubuntu virtual machine running the latest version of Ubuntu (remember though that using the latest tag can result in all types of issues, so it would be better to specify the Ubuntu version with <code>runs-on: ubuntu-20.04</code>). Finally, we have this <code>uses: actions/checkout@v2</code> line in both jobs. This tells GitHub Actions to use the pre-defined action <a href="https://github.com/actions/checkout">actions/checkout</a>. The <a href="https://github.com/actions">actions</a> project contains a number of pre-defined actions created by the team at GitHub. This action essentially just clones your repository into the virtual machine running the job, the reason that GitHub doesn&rsquo;t do this automatically is that certain jobs might not actually need your repository code to run.</p>
+<p>Now, let&rsquo;s look more closely at this publish job. We want to publish our application as a package on NPM. Luckily, there is a pre-defined job which will do this for us called <a href="https://github.com/marketplace/actions/npm-publish">npm-publish</a>. If we can over the documentation provided in the repository README, we can get a good sense of how to integrate this into our workflow. Update the publish job to be:</p>
+<pre><code>publish:
+    name: Publish to github package registry
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: JS-DevTools/npm-publish@v1
+        with:
+            registry: https://npm.pkg.github.com
+            token: ${{ secrets.GITHUB_TOKEN }}
+            tag: ${ GITHUB_SHA }
+</code></pre><p>Now, the publish job will use <code>JS-DevTools/npm-publish@v1</code> and the <code>with</code> keyword allows us to provide parameters to this pre-built action. The two we provide are <code>registry: https://npm.pkg.github.com</code> which tells the action to use GitHub&rsquo;s NPM package registry instead of the actual NPM registry (we already have a GitHub auth token built-in, so this is easier). The second <code>token: ${{ secrets.GITHUB_TOKEN }}</code> sets the token to be the GitHub token which is unique to our repository (using templating similar to that which we saw in Helm). GitHub uses this token when authorizing new packages to their package registry, so we need to provide this otherwise we will not be able to publish.</p>
+<p>After making these changes, let&rsquo;s run our workflow and see how it looks:</p>
+<pre><code>$ git add .
+$ git commit -m &quot;Updated publish job&quot;
+$ git push
+</code></pre><p>the workflow should take a little while to run, but after thirty seconds or so on GitHub you should see:</p>
+<p><img src="/img/lec08/lint_screenshot.png" alt="Lint Job Screenshot"></p>
+<p>for the lint job, additionally for the publish job you should have:</p>
+<p><img src="/img/lec08/publish_screenshot.png" alt="Publish Job Screenshot"></p>
+<p>If your workflow did not run, you may need to make an additional commit (just change something in <code>index.js</code>) for GitHub to recognize that workflows should be run.</p>
+<p>Next, we probably don&rsquo;t want to publish our package to the package registry if it doesn&rsquo;t pass the linter. So, we want to configure our workflow such that the publishing job depends on the lint job. We can do this by adding the <code>needs: lint</code> keyword to our publish job:</p>
+<pre><code>publish:
+    name: Publish to github package registry
+    runs-on: ubuntu-latest
+    needs: lint
+    steps:
+      - uses: actions/checkout@v2
+      - uses: JS-DevTools/npm-publish@v1
+        with:
+            registry: https://npm.pkg.github.com
+            token: ${{ secrets.GITHUB_TOKEN }}
+</code></pre><p>Let&rsquo;s commit and make sure the dependency is reflected in our workflow:</p>
+<pre><code>$ git add .
+$ git commit -m &quot;Added publish job depends on lint job&quot;
+$ git push
+</code></pre><p>Now, you should be able to see the dependency graph on GitHub:</p>
+<p><img src="/img/lec08/needs_screenshot.png" alt="Needs Example Screenshot"></p>
+<p>Think about what other parts of the development process you might be able to automate with GitHub Actions: running tests, test coverage reports, dependency deprecation checks, installing into a Kubernetes cluster with Helm, etc. Feel free to experiment with your repository using different actions available on the GitHub Actions Marketplace!</p>
+
+  
+  </div>
+</article>
+
+    </div>
+    <footer id="footer">
+  <div class="footer-left">
+    Copyright  &copy; 2025  CIS 1912: DevOps 
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+         
+        <li><a href="/">Home</a></li>
+         
+        <li><a href="/lectures/">Schedule</a></li>
+         
+        <li><a href="/resources/">Resources</a></li>
+         
+        <li><a href="/syllabus/">Syllabus</a></li>
+         
+        <li><a href="/staff/">Staff</a></li>
+         
+        <li><a href="https://www.gradescope.com/courses/844801">Gradescope</a></li>
+         
+        <li><a href="https://edstem.org/us/courses/65023/discussion/">Ed</a></li>
+        
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+  </div>
+  
+</body>
+
+<link rel="stylesheet" href=/lib/font-awesome/css/all.min.css>
+<script src=/lib/jquery/jquery.min.js></script>
+<script src=/js/main.js></script>
+</html>

@@ -4,6 +4,7 @@ description = "i love the outside"
 date = "2025-12-24"
 categories = [ "backpacking", "post" ]
 tags = []
+cover = "harriman.jpeg"
 +++
 
 I love living in the city, but my heart yearns for nature. When I first moved to the city, I got my fix by making it out to [Beacon](https://www.scenichudson.org/explore-the-valley/scenic-hudson-parks/mount-beacon-park/) or [Cold Spring](https://lauraperuchi.nyc/day-trip-ideas-from-nyc-a-hiking-trail-in-cold-spring-accessible-by-train/), but I got tired of doing the same manicured hike for the fifth time. Backpacking has brought back my love of being in unfiltered nature - unfortunately, guides on how to do it are few and far between!

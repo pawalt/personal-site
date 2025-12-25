@@ -1,10 +1,8 @@
-$ringSize: 5.5ch;
-$ringWidth: 0.3ch;
-$dotSize: 1ch;
+$ringSize: 2.75rem;
+$ringWidth: 0.15rem;
+$dotSize: 0.5rem;
 $filledSize: $ringSize - (2 * $ringWidth);
 $finishedSize: $filledSize - (2 * $ringWidth);
-$dotMargin: (
-  $filledSize - $dotSize) / 2;
 
 .kudosContainer {
   display: flex;
@@ -15,7 +13,7 @@ $dotMargin: (
 }
 
 #kudosText {
-  margin-left: 1ch;
+  margin-left: 0.5rem;
 }
 
 .kudosCircle {
@@ -25,13 +23,11 @@ $dotMargin: (
 .kudosCircle.empty {
   width: $dotSize;
   height: $dotSize;
-  margin: $dotMargin;
   background-color: red;
   transition: 1s;
 }
 
 .kudosCircle.empty:hover {
-  margin: 0rem;
   height: $filledSize;
   width: $filledSize;
   transition: 1s;
@@ -40,7 +36,6 @@ $dotMargin: (
 .kudosCircle.filled {
   width: $finishedSize;
   height: $finishedSize;
-  margin: $ringWidth;
   background-color: seagreen;
   transition: 0.2s;
 }
@@ -51,6 +46,9 @@ $dotMargin: (
   border-width: $ringWidth;
   border-style: solid;
   border-radius: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .kudosRing.empty {

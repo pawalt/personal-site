@@ -28,44 +28,51 @@ function startKudos() {
   const text = $('#kudosText');
   const kudosInterval = 1 * 1000;
   let lastTime = 0;
+  let kudosCount = 0;
 
-  const initResp = kudosCheck(uuid, postName);
+  // Fetch kudos asynchronously - page loads immediately
+  kudosCheck(uuid, postName, function(initResp) {
+    if (initResp && initResp.numClicked) {
+      kudosCount = initResp.numClicked;
+      text.text(kudosCount + " kudos");
+    }
 
-  // if check fails this will be undefined
-  if (!initResp.numClicked) {
-    initResp.numClicked = 0;
-  }
-  text.text(initResp.numClicked + " kudos");
+    if (initResp && initResp.userClicked) {
+      circle.removeClass("empty");
+      circle.addClass("filled");
+      ring.removeClass("empty");
+      ring.addClass("filled");
+    }
+  });
 
-  if (!initResp.userClicked) {
-    circle.mouseenter(e => {
-      lastTime = (new Date()).getTime();
-      setTimeout(() => {
-        const now = (new Date()).getTime();
-        if (lastTime != 0 && now - lastTime >= kudosInterval) {
-          // Optimistically update UI immediately
-          circle.removeClass("empty");
-          circle.addClass("filled");
-          ring.removeClass("empty");
-          ring.addClass("filled");
-          circle.unbind("mouseenter");
-          circle.unbind("mouseleave");
-          text.text((initResp.numClicked + 1) + " kudos")
+  // Set up interaction handlers immediately (don't wait for fetch)
+  circle.mouseenter(e => {
+    // Don't allow interaction if already filled
+    if (circle.hasClass("filled")) return;
 
-          // Send request in background (async, non-blocking)
-          addKudos(uuid, postName);
-        }
-      }, kudosInterval);
-    });
-    circle.mouseleave(e => {
-      lastTime = 0;
-    });
-  } else {
-    circle.removeClass("empty");
-    circle.addClass("filled");
-    ring.removeClass("empty");
-    ring.addClass("filled");
-  }
+    lastTime = (new Date()).getTime();
+    setTimeout(() => {
+      const now = (new Date()).getTime();
+      if (lastTime != 0 && now - lastTime >= kudosInterval) {
+        // Optimistically update UI immediately
+        circle.removeClass("empty");
+        circle.addClass("filled");
+        ring.removeClass("empty");
+        ring.addClass("filled");
+        circle.unbind("mouseenter");
+        circle.unbind("mouseleave");
+        kudosCount++;
+        text.text(kudosCount + " kudos");
+
+        // Send request in background (async, non-blocking)
+        addKudos(uuid, postName);
+      }
+    }, kudosInterval);
+  });
+
+  circle.mouseleave(e => {
+    lastTime = 0;
+  });
 }
 
 function addKudos(uuid, postName) {
@@ -78,15 +85,15 @@ function addKudos(uuid, postName) {
       user: uuid
     },
     mimeType: 'application/json; charset=utf-8',
-    async: true  // Non-blocking request
+    async: true
   }).fail(function(xhr, status, error) {
     // Silently fail - user already sees the update
     console.log('Kudos request failed:', error);
   });
 }
 
-function kudosCheck(uuid, postName) {
-  const response = $.ajax({
+function kudosCheck(uuid, postName, callback) {
+  $.ajax({
     url: "https://pawalt--kudos-api-web.modal.run/get-kudos",
     method: "GET",
     data: {
@@ -94,8 +101,15 @@ function kudosCheck(uuid, postName) {
       user: uuid
     },
     mimeType: 'application/json; charset=utf-8',
-    async: false
+    async: true
+  }).done(function(response) {
+    try {
+      const data = typeof response === 'string' ? JSON.parse(response) : response;
+      callback(data);
+    } catch (e) {
+      callback({ numClicked: 0, userClicked: false });
+    }
+  }).fail(function() {
+    callback({ numClicked: 0, userClicked: false });
   });
-  return JSON.parse(response.responseText);
 }
-

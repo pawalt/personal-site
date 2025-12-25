@@ -48,3 +48,47 @@
   src: url("../fonts/Inter-UI-BoldItalic.woff2") format("woff2"),
        url("../fonts/Inter-UI-BoldItalic.woff") format("woff");
 }
+
+// Lora - for post content
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 400;
+  src: url("../fonts/Lora-Regular.ttf") format("truetype");
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: italic;
+  font-display: swap;
+  font-weight: 400;
+  src: url("../fonts/Lora-Italic.ttf") format("truetype");
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 500;
+  src: url("../fonts/Lora-Medium.ttf") format("truetype");
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: italic;
+  font-display: swap;
+  font-weight: 500;
+  src: url("../fonts/Lora-MediumItalic.ttf") format("truetype");
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 700;
+  src: url("../fonts/Lora-Bold.ttf") format("truetype");
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: italic;
+  font-display: swap;
+  font-weight: 700;
+  src: url("../fonts/Lora-BoldItalic.ttf") format("truetype");
+}

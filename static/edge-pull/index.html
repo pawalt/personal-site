@@ -302,40 +302,13 @@
         <div class="panel-header">
           <div>
             <h2>Session</h2>
-            <p>Describe how you pulled for this workout.</p>
+            <p>Add the date and any notes that matter for this session.</p>
           </div>
         </div>
         <div class="grid two">
           <label>
             Date
             <input id="session-date" type="date">
-          </label>
-          <label>
-            Edge
-            <input id="edge-size" type="text" placeholder="e.g. 20 mm edge">
-          </label>
-        </div>
-        <div class="grid two">
-          <label>
-            Load used (lb)
-            <input id="session-load" type="number" inputmode="decimal" min="0" step="0.1" placeholder="e.g. 25">
-          </label>
-        </div>
-        <div class="grid two">
-          <label>
-            Grip
-            <select id="grip-type">
-              <option value="Half crimp">Half crimp</option>
-              <option value="Open hand">Open hand</option>
-              <option value="Full crimp">Full crimp</option>
-              <option value="Three finger drag">Three finger drag</option>
-              <option value="Pinch">Pinch</option>
-              <option value="Custom">Custom</option>
-            </select>
-          </label>
-          <label>
-            Pull style
-            <input id="pull-style" type="text" placeholder="e.g. max pulls, repeaters, recruitment pulls">
           </label>
         </div>
         <label>
@@ -395,14 +368,9 @@
 
   <script>
     const STORAGE_KEY = "edge-pull-tracker-sessions-v1";
-    const SETTINGS_KEY = "edge-pull-tracker-settings-v1";
     const APP_SCOPE = "/edge-pull/";
 
-    const sessionLoadInput = document.getElementById("session-load");
-        const sessionDateInput = document.getElementById("session-date");
-    const edgeSizeInput = document.getElementById("edge-size");
-    const gripTypeInput = document.getElementById("grip-type");
-    const pullStyleInput = document.getElementById("pull-style");
+    const sessionDateInput = document.getElementById("session-date");
     const sessionNotesInput = document.getElementById("session-notes");
     const addSetButton = document.getElementById("add-set");
     const saveSessionButton = document.getElementById("save-session");
@@ -425,7 +393,6 @@
     init();
 
     function init() {
-      loadSettings();
       sessionDateInput.value = new Date().toISOString().slice(0, 10);
 
       if (sessions.length === 0) {
@@ -434,9 +401,6 @@
         addSet();
       }
 
-      sessionLoadInput.addEventListener("input", () => {
-        persistSettings();
-      });
       addSetButton.addEventListener("click", () => addSet());
       saveSessionButton.addEventListener("click", saveSession);
       resetFormButton.addEventListener("click", resetForm);
@@ -515,23 +479,6 @@
 
     function persistSessions() {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(sessions));
-    }
-
-    function loadSettings() {
-      try {
-        const settings = JSON.parse(localStorage.getItem(SETTINGS_KEY)) || {};
-        sessionLoadInput.value = settings.sessionLoad || "";
-      } catch (_) {
-      }
-    }
-
-    function persistSettings() {
-      localStorage.setItem(
-        SETTINGS_KEY,
-        JSON.stringify({
-          sessionLoad: sessionLoadInput.value
-        })
-      );
     }
 
     function addSet(prefill = {}) {
@@ -644,21 +591,11 @@
         return;
       }
 
-      const load = Number(sessionLoadInput.value);
-      if (!Number.isFinite(load) || load < 0) {
-        window.alert("Enter the load used before saving.");
-        return;
-      }
-
       const session = {
         id: crypto.randomUUID(),
         savedAt: new Date().toISOString(),
         date: sessionDateInput.value || new Date().toISOString().slice(0, 10),
-        load,
         units: "lb",
-        edge: edgeSizeInput.value.trim(),
-        grip: gripTypeInput.value.trim(),
-        pullStyle: pullStyleInput.value.trim(),
         notes: sessionNotesInput.value.trim(),
         sets: currentSets.map((set) => ({
           maxPullWeight: Number(set.maxPullWeight) || 0,
@@ -672,20 +609,14 @@
 
       sessions.unshift(session);
       persistSessions();
-      persistSettings();
       renderHistory();
       resetForm();
     }
 
     function resetForm(options = {}) {
       sessionDateInput.value = new Date().toISOString().slice(0, 10);
-      edgeSizeInput.value = "";
-      sessionLoadInput.value = "";
-      gripTypeInput.value = "Half crimp";
-      pullStyleInput.value = "";
       sessionNotesInput.value = "";
 
-      persistSettings();
 
       currentSets = [];
       addSet({ maxPullWeight: "", maxRfd: "", holdSeconds: 7, reps: 1, restSeconds: 180, notes: "" });
@@ -710,10 +641,9 @@
         card.innerHTML = `
           <div class="history-top">
             <div>
-              <strong>${escapeHtml(session.date)}${session.edge ? ` - ${escapeHtml(session.edge)}` : ""}</strong>
+              <strong>${escapeHtml(session.date)}</strong>
               <div class="history-meta">
-                ${escapeHtml(session.grip || "Grip not set")} | ${escapeHtml(session.pullStyle || "Style not set")}<br>
-                Load ${formatNumber(session.load)} ${escapeHtml(session.units)} | ${session.sets.length} sets | best pull ${formatNumber(bestPull)} ${escapeHtml(session.units)}
+                ${session.sets.length} sets | best pull ${formatNumber(bestPull)} ${escapeHtml(session.units)}
               </div>
             </div>
             <button class="small subtle-danger" type="button" data-delete="${session.id}">Delete</button>

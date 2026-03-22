@@ -484,6 +484,7 @@
     function addSet(prefill = {}) {
       currentSets.push({
         id: crypto.randomUUID(),
+        hand: prefill.hand ?? "Right",
         maxPullWeight: prefill.maxPullWeight ?? "",
         maxRfd: prefill.maxRfd ?? "",
         holdSeconds: prefill.holdSeconds ?? 7,
@@ -526,6 +527,14 @@
           </div>
           <div class="grid three">
             <label>
+              Hand
+              <select>
+                <option value="Right" ${set.hand === "Right" ? "selected" : ""}>Right</option>
+                <option value="Left" ${set.hand === "Left" ? "selected" : ""}>Left</option>
+                <option value="Both" ${set.hand === "Both" ? "selected" : ""}>Both</option>
+              </select>
+            </label>
+            <label>
               Max pull weight (lb)
               <input type="number" inputmode="decimal" min="0" step="0.1" value="${set.maxPullWeight}">
             </label>
@@ -533,6 +542,8 @@
               Max RFD (lb/s)
               <input type="number" inputmode="decimal" min="0" step="0.1" value="${set.maxRfd}">
             </label>
+          </div>
+          <div class="grid three" style="margin-top: 0.85rem;">
             <label>
               Hold seconds
               <input type="number" inputmode="decimal" min="0" step="1" value="${set.holdSeconds}">
@@ -556,7 +567,9 @@
           </div>
         `;
 
+        const select = card.querySelector("select");
         const inputs = card.querySelectorAll("input");
+        select.addEventListener("change", (event) => updateSet(set.id, "hand", event.target.value, false));
         inputs[0].addEventListener("input", (event) => updateSet(set.id, "maxPullWeight", event.target.value));
         inputs[1].addEventListener("input", (event) => updateSet(set.id, "maxRfd", event.target.value));
         inputs[2].addEventListener("input", (event) => updateSet(set.id, "holdSeconds", event.target.value));
@@ -598,6 +611,7 @@
         units: "lb",
         notes: sessionNotesInput.value.trim(),
         sets: currentSets.map((set) => ({
+          hand: String(set.hand || "Right"),
           maxPullWeight: Number(set.maxPullWeight) || 0,
           maxRfd: Number(set.maxRfd) || 0,
           holdSeconds: Number(set.holdSeconds) || 0,
@@ -619,7 +633,7 @@
 
 
       currentSets = [];
-      addSet({ maxPullWeight: "", maxRfd: "", holdSeconds: 7, reps: 1, restSeconds: 180, notes: "" });
+      addSet({ hand: "Right", maxPullWeight: "", maxRfd: "", holdSeconds: 7, reps: 1, restSeconds: 180, notes: "" });
       renderSets();
     }
 
@@ -655,7 +669,7 @@
           <div class="history-sets">
             ${session.sets.map((set, index) => `
               <div class="history-set-row">
-                <span>Set ${index + 1}: pull ${formatNumber(set.maxPullWeight)} ${escapeHtml(session.units)} | RFD ${formatNumber(set.maxRfd)} ${escapeHtml(session.units)}/s</span>
+                <span>Set ${index + 1} (${escapeHtml(set.hand || "Right")}): pull ${formatNumber(set.maxPullWeight)} ${escapeHtml(session.units)} | RFD ${formatNumber(set.maxRfd)} ${escapeHtml(session.units)}/s</span>
                 <span>${formatNumber(set.holdSeconds)}s x ${formatNumber(set.reps)} | rest ${formatNumber(set.restSeconds)}s</span>
               </div>
             `).join("")}

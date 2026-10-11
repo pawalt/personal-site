@@ -1,0 +1,23 @@
+{{ define "main" }}
+<style>
+  .artifacts-intro { margin-bottom: 2rem; }
+  .artifact-entry { min-width: 0; }
+  .posts .artifact-entry a { display: block; padding: 16px 0; }
+  .artifact-entry .post-title { display: block; font-weight: 600; }
+  .artifact-description { display: block; margin-top: 8px; font-size: .9rem; line-height: 1.6; opacity: .75; max-width: 60ch; }
+</style>
+<main class="posts">
+  <h1>{{ .Title }}</h1>
+  <div class="artifacts-intro">{{ .Content }}</div>
+  <ul class="posts-list" aria-label="Artifacts">
+    {{ range .Site.Data.artifacts }}
+    <li class="post-item artifact-entry">
+      <a href="{{ .url | relURL }}">
+        <span class="post-title">{{ .title }} →</span>
+        <span class="artifact-description">{{ .description }}</span>
+      </a>
+    </li>
+    {{ end }}
+  </ul>
+</main>
+{{ end }}

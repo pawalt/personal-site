@@ -77,17 +77,21 @@ pygmentsCodefences = true
 [menu]
   [[menu.main]]
     identifier = "about"
+    weight = 10
     name = "About"
     url = "/about"
   [[menu.main]]
     identifier = "blog"
+    weight = 20
     name = "Blog"
     url = "/posts"
   [[menu.main]]
     identifier = "braindump"
+    weight = 30
     name = "Braindump"
     url = "/braindump"
   [[menu.main]]
-    identifier = "recipes"
-    name = "Food"
-    url = "/recipes"
+    identifier = "artifacts"
+    weight = 40
+    name = "Artifacts"
+    url = "/artifacts/"

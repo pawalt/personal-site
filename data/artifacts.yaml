@@ -1,0 +1,3 @@
+- title: "Acrobot playground"
+  url: "/artifacts/acrobot/"
+  description: "Drop, swing, and balance a two-link robot with a learned neural controller. An interactive simulation for desktop and mobile."
